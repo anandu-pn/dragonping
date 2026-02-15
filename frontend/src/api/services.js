@@ -9,10 +9,30 @@ const apiClient = axios.create({
   },
 })
 
-// Error interceptor
+// Request interceptor - add JWT token to headers
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('user_email')
+      // Optionally redirect to login (can be done in component)
+    }
     console.error('API Error:', error.response?.data || error.message)
     return Promise.reject(error)
   }
@@ -58,21 +78,44 @@ export const getService = async (serviceId) => {
  * Create new service
  * @param {Object} data - Service data
  * @param {string} data.name - Service name
- * @param {string} data.url - Service URL
+ * @param {string} [data.url] - Service URL (for website type)
+ * @param {string} [data.ip_address] - Device IP (for device type)
  * @param {string} [data.description] - Service description
+ * @param {string} data.type - Service type ('website' or 'device')
+ * @param {string} data.protocol - Protocol ('https', 'http', 'icmp', 'tcp')
+ * @param {number} [data.port] - Port number (for TCP)
  * @param {number} [data.interval] - Check interval in seconds
  * @param {boolean} [data.active] - Enable monitoring
+ * @param {boolean} [data.is_public] - Make service public
  * @returns {Promise<Object>}
  */
 export const addService = async (data) => {
   try {
-    const response = await apiClient.post('/services', {
+    const payload = {
       name: data.name,
-      url: data.url,
+      type: data.type,
+      protocol: data.protocol,
       description: data.description || '',
       interval: data.interval || 30,
       active: data.active !== false,
-    })
+      is_public: data.is_public || false,
+    }
+
+    // Add URL for website services
+    if (data.url !== undefined) {
+      payload.url = data.url
+    }
+
+    // Add device-specific fields for device services
+    if (data.ip_address !== undefined) {
+      payload.ip_address = data.ip_address
+    }
+
+    if (data.port !== undefined) {
+      payload.port = data.port
+    }
+
+    const response = await apiClient.post('/services', payload)
     return response.data
   } catch (error) {
     console.error('Failed to add service:', error)

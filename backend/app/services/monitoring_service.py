@@ -1,12 +1,13 @@
 """Monitoring service layer with business logic."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
-from app.models import Service, Check
+from app.models import Service, Check, User, AlertLog
 from app.monitor import check_service
+from app.alerts import send_alerts
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ class MonitoringService:
     @staticmethod
     async def run_checks(db: Session) -> dict:
         """
-        Run monitoring checks for all active services.
+        Run monitoring checks for all active services and devices.
 
         Args:
             db: Database session
@@ -37,7 +38,14 @@ class MonitoringService:
 
         for service in active_services:
             try:
-                result = await check_service(str(service.url))
+                # Call dispatcher with appropriate parameters based on service type
+                result = await check_service(
+                    service_type=service.type,
+                    protocol=service.protocol,
+                    url=service.url,
+                    ip_address=service.ip_address,
+                    port=service.port,
+                )
 
                 check = Check(
                     service_id=service.id,
@@ -45,10 +53,12 @@ class MonitoringService:
                     status_code=result["status_code"],
                     response_time=result["response_time"],
                     error_message=result["error_message"],
-                    checked_at=datetime.utcnow(),
+                    checked_at=datetime.now(timezone.utc),
                 )
 
                 db.add(check)
+                # Flush so the check exists in the session for subsequent queries
+                db.flush()
                 checked += 1
 
                 if result["status"] == "UP":
@@ -56,8 +66,60 @@ class MonitoringService:
                 else:
                     failed += 1
                     logger.warning(
-                        f"Service {service.name} ({service.url}) is DOWN: {result['error_message']}"
+                        f"Service {service.name} (type={service.type}, protocol={service.protocol}) is DOWN: {result['error_message']}"
                     )
+
+                    # Check for 5 consecutive DOWN checks (including this one)
+                    recent_checks = (
+                        db.query(Check)
+                        .filter(Check.service_id == service.id)
+                        .order_by(Check.checked_at.desc())
+                        .limit(5)
+                        .all()
+                    )
+
+                    if len(recent_checks) == 5 and all(c.status == "DOWN" for c in recent_checks):
+                        # Determine if we've already sent a DOWN alert for this sequence
+                        oldest_checked_at = recent_checks[-1].checked_at
+                        recent_alert = (
+                            db.query(AlertLog)
+                            .filter(AlertLog.service_id == service.id, AlertLog.alert_type == "DOWN")
+                            .order_by(AlertLog.sent_at.desc())
+                            .first()
+                        )
+
+                        already_alerted = False
+                        if recent_alert and recent_alert.sent_at >= oldest_checked_at:
+                            already_alerted = True
+
+                        if not already_alerted:
+                            # Get admin recipient emails
+                            admins = db.query(User).filter(User.is_admin == True).all()
+                            recipients = [a.email for a in admins if a.email]
+
+                            # Fire alert emails asynchronously
+                            try:
+                                if recipients:
+                                    await send_alerts(
+                                        service_name=service.name,
+                                        status="DOWN",
+                                        service_id=service.id,
+                                        recipients=recipients,
+                                        error_message=result.get("error_message"),
+                                    )
+
+                                    # Record alert logs per recipient
+                                    for r in recipients:
+                                        alert_log = AlertLog(
+                                            service_id=service.id,
+                                            alert_type="DOWN",
+                                            recipient_email=r,
+                                        )
+                                        db.add(alert_log)
+                                    # flush logs so they are persisted on commit
+                                    db.flush()
+                            except Exception as e:
+                                logger.error(f"Error sending DOWN alerts for service {service.id}: {e}")
 
             except Exception as e:
                 logger.error(f"Error checking service {service.name}: {str(e)}")
@@ -91,7 +153,9 @@ class MonitoringService:
             return {
                 "service_id": service_id,
                 "name": service.name,
-                "url": str(service.url),
+                "url": service.url,
+                "type": service.type,
+                "protocol": service.protocol,
                 "status": "UNKNOWN",
                 "uptime_percentage": 0,
                 "avg_response_time": None,
@@ -118,7 +182,9 @@ class MonitoringService:
         return {
             "service_id": service_id,
             "name": service.name,
-            "url": str(service.url),
+            "url": service.url,
+            "type": service.type,
+            "protocol": service.protocol,
             "status": current_status,
             "uptime_percentage": round(uptime_percentage, 2),
             "avg_response_time": round(avg_response_time, 2) if avg_response_time else None,

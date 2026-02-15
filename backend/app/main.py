@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import init_db
 from app.scheduler import start_scheduler, stop_scheduler
-from app.routes import services, status
+from app.routes import services, status, auth, public_status, alerts
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="DragonPing",
     description="Website uptime monitoring system",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -58,8 +58,11 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth.router)
+app.include_router(public_status.router)
 app.include_router(services.router)
 app.include_router(status.router)
+app.include_router(alerts.router)
 
 
 @app.get("/", tags=["root"])
@@ -68,7 +71,7 @@ def read_root():
     return {
         "message": "Welcome to DragonPing",
         "docs": "/docs",
-        "version": "0.1.0",
+        "version": "0.2.0",
     }
 
 
