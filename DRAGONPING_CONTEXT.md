@@ -20,9 +20,11 @@ backend/app/routes/
   status.py                  — /api/status/* + logs + overall
   alerts.py                  — email alerts (CREATE, LIST, TEST)
   public.py                  — unauthenticated /api/public/status
-frontend/src/api/services.js — all Axios calls
+  predictions.py             — /api/predictions/summary, /api/predictions/{id}
+backend/app/predictor.py     — ML prediction engine (threshold, EWMA, Isolation Forest)
+frontend/src/api/services.js — all Axios calls (incl. predictions)
 frontend/src/pages/          — Dashboard, AddService, Login, Register
-frontend/src/components/     — ServiceCard
+frontend/src/components/     — ServiceCard (with prediction risk indicator)
 
 ---
 
@@ -34,6 +36,9 @@ services     — id, name, description, type(website/device),
 checks       — id, service_id(FK), status(UP/DOWN/UNKNOWN),
                status_code, response_time_ms, error_message, checked_at
 alert_logs   — id, service_id(FK), alert_type, recipient_email, sent_at
+service_predictions — id, service_id(FK), checked_at, risk_level(low/medium/high),
+               confidence(0-1), threshold_flag, ewma_flag, isolation_flag,
+               reason, votes(0-3)
 
 ---
 
@@ -67,11 +72,14 @@ alert_logs   — id, service_id(FK), alert_type, recipient_email, sent_at
 ### Not started yet ⬜
 - Alembic DB migrations
 - Historical uptime charts (24h / 7d / 30d aggregation endpoint)
+- Docker / deployment
+
+### Done (recent) ✅
+- ML anomaly detection — Isolation Forest + EWMA + threshold rules
+  (scikit-learn>=1.3.0 in requirements.txt)
 - Shell agent script (sends CPU/RAM/network to /api/agent/heartbeat)
 - Agent metrics table + API endpoint
 - Agent dashboard page
-- ML anomaly detection (Isolation Forest on response_time_ms)
-- Docker / deployment
 
 ---
 

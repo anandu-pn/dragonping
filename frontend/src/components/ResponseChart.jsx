@@ -22,11 +22,11 @@ ChartJS.register(
   Filler
 )
 
-function ResponseChart({ checks = [], title = 'Response Time Trend' }) {
+function ResponseChart({ checks = [], title = '' }) {
   if (!checks || checks.length === 0) {
     return (
-      <div className="card p-8 text-center">
-        <p className="text-dark-400">No data available yet</p>
+      <div className="py-8 text-center">
+        <p className="text-[#484f58] text-sm">No data available yet</p>
       </div>
     )
   }
@@ -43,52 +43,70 @@ function ResponseChart({ checks = [], title = 'Response Time Trend' }) {
   })
 
   const responseData = sortedChecks.map((check) => check.response_time || 0)
+  const maxResponse = Math.max(...responseData)
+
+  // Color-code: green if all fast, yellow if some slow, red if very slow  
+  const avgRT = responseData.reduce((a, b) => a + b, 0) / responseData.length
+  const lineColor = avgRT < 500 ? '#50b83c' : avgRT < 2000 ? '#f39c12' : '#e74c3c'
+  const fillColor = avgRT < 500
+    ? 'rgba(80, 184, 60, 0.08)'
+    : avgRT < 2000
+      ? 'rgba(243, 156, 18, 0.08)'
+      : 'rgba(231, 76, 60, 0.08)'
 
   const data = {
     labels,
     datasets: [
       {
-        label: 'Response Time (ms)',
+        label: 'Response Time',
         data: responseData,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: lineColor,
+        backgroundColor: fillColor,
         borderWidth: 2,
         fill: true,
-        pointBackgroundColor: '#10b981',
-        pointBorderColor: '#111827',
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        tension: 0.4,
+        pointBackgroundColor: lineColor,
+        pointBorderColor: '#161b22',
+        pointBorderWidth: 1.5,
+        pointRadius: 2,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: lineColor,
+        pointHoverBorderColor: '#e6edf3',
+        pointHoverBorderWidth: 2,
+        tension: 0.35,
       },
     ],
   }
 
   const options = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: {
-        display: true,
-        labels: {
-          color: '#d1d5db',
-          font: { size: 12 },
-        },
+        display: false,
       },
       title: {
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-        titleColor: '#f3f4f6',
-        bodyColor: '#d1d5db',
-        borderColor: '#374151',
+        backgroundColor: '#161b22',
+        titleColor: '#e6edf3',
+        titleFont: { size: 11, weight: '600' },
+        bodyColor: '#8b949e',
+        bodyFont: { size: 12, family: "'IBM Plex Mono', monospace" },
+        borderColor: '#30363d',
         borderWidth: 1,
-        padding: 12,
+        padding: { x: 12, y: 8 },
+        cornerRadius: 6,
         displayColors: false,
         callbacks: {
-          label: function (context) {
-            return `${context.parsed.y.toFixed(2)}ms`
+          title: (items) => items[0]?.label || '',
+          label: (context) => {
+            const val = context.parsed.y
+            return val < 1000 ? `${Math.round(val)} ms` : `${(val / 1000).toFixed(2)} s`
           },
         },
       },
@@ -96,38 +114,53 @@ function ResponseChart({ checks = [], title = 'Response Time Trend' }) {
     scales: {
       y: {
         beginAtZero: true,
-        max: Math.max(...responseData) * 1.1 || 1000,
+        suggestedMax: maxResponse * 1.15 || 1000,
+        border: { display: false },
         grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
+          color: 'rgba(48, 54, 61, 0.5)',
           drawBorder: false,
+          lineWidth: 1,
         },
         ticks: {
-          color: '#9ca3af',
-          font: { size: 11 },
-          callback: function (value) {
-            return `${value}ms`
+          color: '#484f58',
+          font: { size: 10, family: "'IBM Plex Mono', monospace" },
+          padding: 8,
+          maxTicksLimit: 5,
+          callback: (value) => {
+            return value < 1000 ? `${Math.round(value)}ms` : `${(value / 1000).toFixed(1)}s`
           },
         },
       },
       x: {
+        border: { display: false },
         grid: {
           display: false,
-          drawBorder: false,
         },
         ticks: {
-          color: '#9ca3af',
-          font: { size: 11 },
-          maxRotation: 45,
-          minRotation: 0,
+          color: '#484f58',
+          font: { size: 10, family: "'IBM Plex Mono', monospace" },
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 8,
+          padding: 4,
         },
       },
+    },
+    layout: {
+      padding: { top: 4, right: 4, bottom: 0, left: 0 },
     },
   }
 
   return (
-    <div className="card p-6">
-      <h3 className="text-lg font-semibold text-dark-50 mb-4">{title}</h3>
-      <div style={{ height: '300px' }}>
+    <div>
+      {/* Avg response time summary */}
+      <div className="flex items-baseline gap-2 mb-3">
+        <span className="text-lg font-bold font-mono" style={{ color: lineColor }}>
+          {avgRT < 1000 ? `${Math.round(avgRT)}ms` : `${(avgRT / 1000).toFixed(2)}s`}
+        </span>
+        <span className="text-[11px] text-[#484f58]">avg response · {sortedChecks.length} checks</span>
+      </div>
+      <div style={{ height: '200px' }}>
         <Line data={data} options={options} />
       </div>
     </div>

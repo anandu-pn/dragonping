@@ -4,10 +4,11 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.db import init_db
 from app.scheduler import start_scheduler, stop_scheduler
-from app.routes import services, status, auth, public_status, alerts
+from app.routes import services, status, auth, public_status, alerts, agent, predictions
 
 # Configure logging
 logging.basicConfig(
@@ -63,6 +64,15 @@ app.include_router(public_status.router)
 app.include_router(services.router)
 app.include_router(status.router)
 app.include_router(alerts.router)
+app.include_router(agent.router)
+app.include_router(predictions.router)
+
+# Serve static files (e.g. dragonping-agent.sh)
+import os
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+# Create static directoy if it doesn't exist
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/", tags=["root"])

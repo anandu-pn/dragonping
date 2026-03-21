@@ -147,8 +147,31 @@ def start_scheduler():
             name="Periodic uptime monitoring",
             replace_existing=True,
         )
+
+        # Run prediction engine every 5 minutes
+        scheduler.add_job(
+            prediction_job,
+            trigger=IntervalTrigger(minutes=5),
+            id="prediction_job",
+            name="Predictive downtime analysis",
+            replace_existing=True,
+        )
+
         scheduler.start()
-        logger.info("Scheduler started - monitoring job scheduled every 30 seconds")
+        logger.info("Scheduler started - monitoring (30s) + prediction (5m) jobs scheduled")
+
+
+def prediction_job():
+    """Synchronous wrapper for the prediction engine."""
+    from app.predictor import run_predictions
+
+    db = SessionLocal()
+    try:
+        run_predictions(db)
+    except Exception as e:
+        logger.error(f"Prediction job failed: {e}")
+    finally:
+        db.close()
 
 
 def stop_scheduler():

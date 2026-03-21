@@ -265,6 +265,40 @@ export const formatUptimePercentage = (percentage) => {
   return `${percentage.toFixed(2)}%`
 }
 
+// ============== Predictions ==============
+
+/**
+ * Get prediction summary for all services (latest prediction per service)
+ * @returns {Promise<Array>}
+ */
+export const getPredictionsSummary = async () => {
+  try {
+    const response = await apiClient.get('/predictions/summary')
+    return response.data
+  } catch (error) {
+    console.error('Failed to fetch predictions summary:', error)
+    return []
+  }
+}
+
+/**
+ * Get prediction history for a specific service
+ * @param {number} serviceId - Service ID
+ * @param {number} limit - Number of predictions to retrieve
+ * @returns {Promise<Array>}
+ */
+export const getServicePredictions = async (serviceId, limit = 20) => {
+  try {
+    const response = await apiClient.get(`/predictions/${serviceId}`, {
+      params: { limit }
+    })
+    return response.data
+  } catch (error) {
+    console.error(`Failed to fetch predictions for service ${serviceId}:`, error)
+    return []
+  }
+}
+
 export default {
   getServices,
   getService,
@@ -278,4 +312,6 @@ export default {
   formatResponseTime,
   formatDateTime,
   formatUptimePercentage,
+  getPredictionsSummary,
+  getServicePredictions,
 }

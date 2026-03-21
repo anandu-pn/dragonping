@@ -1,7 +1,7 @@
 """SQLAlchemy models for DragonPing monitoring system."""
 
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean, ForeignKey, Index, Enum
+from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Float, Boolean, ForeignKey, Index, Enum
 from sqlalchemy.orm import relationship
 from app.db import Base
 import enum
@@ -113,3 +113,72 @@ class AlertLog(Base):
 
     def __repr__(self):
         return f"<AlertLog(id={self.id}, service_id={self.service_id}, alert_type={self.alert_type})>"
+
+
+class RegisteredAgent(Base):
+    """Model for registered monitoring agents."""
+
+    __tablename__ = "registered_agents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    hostname = Column(String(255), unique=True, index=True, nullable=False)
+    device_label = Column(String(255), nullable=True)
+    owner_email = Column(String(255), nullable=False)
+    registered_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    last_seen = Column(DateTime(timezone=True), nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return f"<RegisteredAgent(id={self.id}, hostname={self.hostname}, owner={self.owner_email})>"
+
+
+class AgentMetric(Base):
+    """Model for individual agent telemetry metrics."""
+
+    __tablename__ = "agent_metrics"
+
+    id = Column(Integer, primary_key=True, index=True)
+    hostname = Column(String(255), index=True, nullable=False)
+    cpu_percent = Column(Float, nullable=False)
+    ram_percent = Column(Float, nullable=False)
+    ram_used_mb = Column(Integer, nullable=False)
+    ram_total_mb = Column(Integer, nullable=False)
+    disk_percent = Column(Float, nullable=False)
+    disk_used_gb = Column(Integer, nullable=False)
+    disk_total_gb = Column(Integer, nullable=False)
+    net_rx_bytes = Column(BigInteger, nullable=False)
+    net_tx_bytes = Column(BigInteger, nullable=False)
+    processes = Column(String, nullable=False)  # JSON String format
+    recorded_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True, nullable=False)
+
+    def __repr__(self):
+        return f"<AgentMetric(id={self.id}, hostname={self.hostname})>"
+
+
+class ServicePrediction(Base):
+    """Model for ML-based predictive downtime detection results."""
+
+    __tablename__ = "service_predictions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    service_id = Column(Integer, ForeignKey("services.id"), nullable=False, index=True)
+    checked_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
+    risk_level = Column(String(10), nullable=False, default="low")  # "low" / "medium" / "high"
+    confidence = Column(Float, nullable=False, default=0.0)  # 0.0 to 1.0
+    threshold_flag = Column(Boolean, default=False, nullable=False)
+    ewma_flag = Column(Boolean, default=False, nullable=False)
+    isolation_flag = Column(Boolean, default=False, nullable=False)
+    reason = Column(String(2048), nullable=True)  # Human-readable explanation
+    votes = Column(Integer, default=0, nullable=False)  # 0-3, how many methods flagged it
+
+    # Composite index for efficient queries
+    __table_args__ = (
+        Index("ix_service_predictions_service_id_checked_at", "service_id", "checked_at"),
+    )
+
+    # Relationships
+    service = relationship("Service")
+
+    def __repr__(self):
+        return f"<ServicePrediction(id={self.id}, service_id={self.service_id}, risk={self.risk_level}, votes={self.votes})>"
+

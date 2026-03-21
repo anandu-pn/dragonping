@@ -5,6 +5,8 @@ import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
 import AddService from './pages/AddService'
 import Logs from './pages/Logs'
+import Servers from './pages/Servers'
+import AgentDashboard from './pages/AgentDashboard'
 import PublicStatus from './pages/PublicStatus'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -32,6 +34,8 @@ function App() {
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/add" element={<AddService />} />
                       <Route path="/logs" element={<Logs />} />
+                      <Route path="/servers" element={<Servers />} />
+                      <Route path="/agent/:hostname" element={<AgentDashboard />} />
                     </Routes>
                   </main>
                 </div>
@@ -45,3 +49,4 @@ function App() {
 }
 
 export default App
+

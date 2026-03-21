@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Activity, Mail, Lock } from 'lucide-react'
 import dragonLogo from '../../resources/dragonping-logo-removebg-preview.png'
 
 export default function Login() {
@@ -27,85 +28,94 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="bg-dark-card border border-dark-border rounded-lg shadow-sm p-8">
+    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Card */}
+        <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <img
-              src={dragonLogo}
-              alt="DragonPing"
-              className="h-16 w-16 mx-auto mb-4"
-            />
-            <h1 className="text-3xl font-bold text-dark-text">DragonPing</h1>
-            <p className="text-dark-muted mt-2">Sign in to your account</p>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <img src={dragonLogo} alt="DragonPing" className="h-10 w-10" />
+              <Activity className="w-5 h-5 text-[#50b83c]" />
+            </div>
+            <h1 className="text-2xl font-bold text-[#e6edf3]">DragonPing</h1>
+            <p className="text-[#8b949e] text-sm mt-1">Sign in to your monitoring dashboard</p>
           </div>
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <div className="mb-4 p-3 bg-[#e74c3c]/10 border border-[#e74c3c] rounded text-[#e74c3c] text-sm">
+            <div className="mb-5 p-3 bg-[#e74c3c]/10 border border-[#e74c3c]/30 rounded-lg text-[#e74c3c] text-sm">
               {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="email" className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">
                 Email Address
               </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]"
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#484f58]" />
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg text-sm text-[#c9d1d9] placeholder-[#484f58] focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]/30 transition-colors"
+                />
+              </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-dark-text mb-2">
+              <label htmlFor="password" className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]"
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#484f58]" />
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg text-sm text-[#c9d1d9] placeholder-[#484f58] focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]/30 transition-colors"
+                />
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 bg-[#50b83c] hover:bg-[#439c33] disabled:opacity-50 text-white font-medium rounded-lg transition-colors duration-200"
+              className="w-full px-4 py-2.5 bg-[#50b83c] hover:bg-[#439c33] active:bg-[#3a8a2c] disabled:opacity-50 text-white font-semibold text-sm rounded-lg transition-colors"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  Signing in...
+                </span>
+              ) : 'Sign In'}
             </button>
           </form>
 
           {/* Register Link */}
           <div className="mt-6 text-center">
-            <p className="text-dark-muted text-sm">
+            <p className="text-[#8b949e] text-sm">
               Don't have an account?{' '}
-              <Link to="/register" className="text-[#3498db] hover:text-[#2980b9] font-medium">
-                Sign up here
+              <Link to="/register" className="text-[#3498db] hover:text-[#5dade2] font-medium">
+                Sign up
               </Link>
             </p>
           </div>
-
-          {/* Divider */}
-          <div className="mt-6 pt-6 border-t border-dark-border">
-            <p className="text-dark-muted text-xs text-center">
-              Demo credentials: admin@example.com / password123
-            </p>
-          </div>
         </div>
+
+        {/* Footer */}
+        <p className="text-center text-[#484f58] text-xs mt-6">
+          Uptime monitoring for your infrastructure
+        </p>
       </div>
     </div>
   )
