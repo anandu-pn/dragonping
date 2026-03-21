@@ -41,6 +41,7 @@ class Service(Base):
     active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
     # Relationships
     checks = relationship("Check", back_populates="service", cascade="all, delete-orphan")
@@ -81,13 +82,14 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, index=True, nullable=True)
     email = Column(String(255), nullable=False, unique=True, index=True)
     password_hash = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     def __repr__(self):
-        return f"<User(id={self.id}, email={self.email}, is_admin={self.is_admin})>"
+        return f"<User(id={self.id}, username={self.username}, email={self.email}, is_admin={self.is_admin})>"
 
 
 class AlertLog(Base):

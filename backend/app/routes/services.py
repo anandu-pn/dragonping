@@ -71,6 +71,7 @@ def create_service(
         is_public=service.is_public,
         interval=service.interval,
         active=service.active,
+        user_id=current_user.id,
     )
 
     db.add(db_service)
@@ -84,7 +85,7 @@ def create_service(
 
 @router.get("", response_model=list[ServiceResponse])
 def list_services(
-    skip: int = 0, limit: int = 100, active_only: bool = False, db: Session = Depends(get_db)
+    skip: int = 0, limit: int = 100, active_only: bool = False, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)
 ):
     """
     List all services.
@@ -100,6 +101,9 @@ def list_services(
     """
     query = db.query(Service)
 
+    if not current_user.is_admin:
+        query = query.filter(Service.user_id == current_user.id)
+
     if active_only:
         query = query.filter(Service.active == True)
 
@@ -109,7 +113,7 @@ def list_services(
 
 
 @router.get("/{service_id}", response_model=ServiceResponse)
-def get_service(service_id: int, db: Session = Depends(get_db)):
+def get_service(service_id: int, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     """
     Get a specific service by ID.
 
@@ -125,6 +129,11 @@ def get_service(service_id: int, db: Session = Depends(get_db)):
     if not service:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
+        )
+
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this service"
         )
 
     return service
@@ -154,6 +163,11 @@ def update_service(
     if not service:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
+        )
+
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this service"
         )
 
     # Check if new URL is unique
@@ -206,6 +220,11 @@ def delete_service(
     if not service:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
+        )
+
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this service"
         )
 
     db.delete(service)

@@ -17,7 +17,8 @@ function App() {
           {/* Public pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/public" element={<PublicStatus />} />
+          <Route path="/public/:username" element={<PublicStatus />} />
+          <Route path="/public" element={<div className="p-12 text-center text-dark-400">Please append a username to the URL, e.g., /public/username</div>} />
 
           {/* Protected pages with navbar */}
           <Route

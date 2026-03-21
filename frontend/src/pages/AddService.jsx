@@ -128,7 +128,7 @@ function AddService() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-950 to-darker pb-12">
+    <div className="min-h-screen bg-dark-bg pb-12">
       <div className="max-w-3xl mx-auto px-4 md:px-8 pt-12">
         {/* Header */}
         <div className="mb-12 animate-fade-in">
@@ -159,7 +159,7 @@ function AddService() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Service Type Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+              <label className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                 Service Type <span className="text-status-down">*</span>
               </label>
               <div className="grid grid-cols-2 gap-4">
@@ -171,15 +171,15 @@ function AddService() {
                     setProtocol('https')
                   }}
                   disabled={loading}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-4 rounded-lg border focus:outline-none transition-all duration-200 ${
                     serviceType === 'website'
-                      ? 'bg-emerald-900/30 border-status-up shadow-lg shadow-emerald-500/20'
-                      : 'bg-dark-800/50 border-dark-700 hover:border-dark-600'
+                      ? 'bg-status-up/10 border-status-up shadow-sm shadow-status-up/10'
+                      : 'bg-dark-bg border-dark-border hover:border-dark-muted'
                   }`}
                 >
                   <Globe className="w-6 h-6 mx-auto mb-2 text-status-up" />
-                  <div className="font-semibold text-dark-50">Website</div>
-                  <div className="text-xs text-dark-400 mt-1">HTTP/HTTPS endpoints</div>
+                  <div className="font-semibold text-dark-text">Website</div>
+                  <div className="text-xs text-dark-muted mt-1">HTTP/HTTPS endpoints</div>
                 </button>
 
                 {/* Device Option */}
@@ -190,22 +190,22 @@ function AddService() {
                     setProtocol('icmp')
                   }}
                   disabled={loading}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-4 rounded-lg border focus:outline-none transition-all duration-200 ${
                     serviceType === 'device'
-                      ? 'bg-blue-900/30 border-blue-500 shadow-lg shadow-blue-500/20'
-                      : 'bg-dark-800/50 border-dark-700 hover:border-dark-600'
+                      ? 'bg-[#3498db]/10 border-[#3498db] shadow-sm shadow-[#3498db]/10'
+                      : 'bg-dark-bg border-dark-border hover:border-dark-muted'
                   }`}
                 >
-                  <Cpu className="w-6 h-6 mx-auto mb-2 text-blue-400" />
-                  <div className="font-semibold text-dark-50">Device</div>
-                  <div className="text-xs text-dark-400 mt-1">Local network devices</div>
+                  <Cpu className="w-6 h-6 mx-auto mb-2 text-[#3498db]" />
+                  <div className="font-semibold text-dark-text">Device</div>
+                  <div className="text-xs text-dark-muted mt-1">Local network devices</div>
                 </button>
               </div>
             </div>
 
             {/* Service Name */}
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+              <label htmlFor="name" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                 Service Name <span className="text-status-down">*</span>
               </label>
               <input
@@ -218,7 +218,7 @@ function AddService() {
                 className="input-field"
                 disabled={loading}
               />
-              <p className="text-xs text-dark-500">A friendly name to identify this service</p>
+              <p className="text-xs text-dark-muted">A friendly name to identify this service</p>
             </div>
 
             {/* Website-specific fields */}
@@ -226,7 +226,7 @@ function AddService() {
               <>
                 {/* Protocol */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+                  <label className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                     Protocol <span className="text-status-down">*</span>
                   </label>
                   <div className="flex gap-2">
@@ -236,10 +236,10 @@ function AddService() {
                         type="button"
                         onClick={() => setProtocol(proto)}
                         disabled={loading}
-                        className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all border ${
                           protocol === proto
-                            ? 'bg-status-up text-dark-900'
-                            : 'bg-dark-700/50 text-dark-300 hover:bg-dark-700'
+                            ? 'bg-dark-bg border-status-up text-status-up'
+                            : 'bg-dark-bg border-dark-border text-dark-muted hover:border-dark-muted hover:text-dark-text'
                         }`}
                       >
                         {proto.toUpperCase()}
@@ -250,7 +250,7 @@ function AddService() {
 
                 {/* Website URL */}
                 <div className="space-y-2">
-                  <label htmlFor="url" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+                  <label htmlFor="url" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                     Website URL <span className="text-status-down">*</span>
                   </label>
                   <input
@@ -263,7 +263,7 @@ function AddService() {
                     className="input-field"
                     disabled={loading}
                   />
-                  <p className="text-xs text-dark-500">Full URL including protocol</p>
+                  <p className="text-xs text-dark-muted">Full URL including protocol</p>
                 </div>
               </>
             )}
@@ -273,7 +273,7 @@ function AddService() {
               <>
                 {/* Protocol */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+                  <label className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                     Monitoring Method <span className="text-status-down">*</span>
                   </label>
                   <div className="flex gap-2">
@@ -283,24 +283,24 @@ function AddService() {
                         type="button"
                         onClick={() => setProtocol(proto)}
                         disabled={loading}
-                        className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                        className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all border ${
                           protocol === proto
-                            ? 'bg-blue-500 text-dark-900'
-                            : 'bg-dark-700/50 text-dark-300 hover:bg-dark-700'
+                            ? 'bg-dark-bg border-[#3498db] text-[#3498db]'
+                            : 'bg-dark-bg border-dark-border text-dark-muted hover:border-dark-muted hover:text-dark-text'
                         }`}
                       >
                         {proto === 'icmp' ? 'Ping (ICMP)' : 'TCP Port'}
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-dark-500">
+                  <p className="text-xs text-dark-muted">
                     {protocol === 'icmp' ? 'Sends ICMP ping packets' : 'Checks TCP port connectivity'}
                   </p>
                 </div>
 
                 {/* IP Address */}
                 <div className="space-y-2">
-                  <label htmlFor="ip_address" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+                  <label htmlFor="ip_address" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                     Device IP Address <span className="text-status-down">*</span>
                   </label>
                   <input
@@ -313,13 +313,13 @@ function AddService() {
                     className="input-field"
                     disabled={loading}
                   />
-                  <p className="text-xs text-dark-500">Local or remote device IP address</p>
+                  <p className="text-xs text-dark-muted">Local or remote device IP address</p>
                 </div>
 
                 {/* TCP Port (only for TCP monitoring) */}
                 {protocol === 'tcp' && (
                   <div className="space-y-2">
-                    <label htmlFor="port" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+                    <label htmlFor="port" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                       Port <span className="text-status-down">*</span>
                     </label>
                     <input
@@ -334,7 +334,7 @@ function AddService() {
                       className="input-field"
                       disabled={loading}
                     />
-                    <p className="text-xs text-dark-500">Port number to check (1-65535)</p>
+                    <p className="text-xs text-dark-muted">Port number to check (1-65535)</p>
                   </div>
                 )}
               </>
@@ -342,8 +342,8 @@ function AddService() {
 
             {/* Description */}
             <div className="space-y-2">
-              <label htmlFor="description" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
-                Description <span className="text-dark-500 font-normal">(Optional)</span>
+              <label htmlFor="description" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
+                Description <span className="text-dark-muted font-normal">(Optional)</span>
               </label>
               <textarea
                 id="description"
@@ -355,12 +355,12 @@ function AddService() {
                 className="input-field resize-none"
                 disabled={loading}
               />
-              <p className="text-xs text-dark-500">Any additional notes for your reference</p>
+              <p className="text-xs text-dark-muted">Any additional notes for your reference</p>
             </div>
 
             {/* Check Interval */}
             <div className="space-y-2">
-              <label htmlFor="interval" className="block text-sm font-semibold text-dark-50 uppercase tracking-wide">
+              <label htmlFor="interval" className="block text-sm font-semibold text-dark-text uppercase tracking-wide">
                 Check Interval <span className="text-status-down">*</span>
               </label>
               <div className="flex items-center gap-3">
@@ -372,11 +372,11 @@ function AddService() {
                     max="3600"
                     value={formData.interval}
                     onChange={(e) => setFormData({ ...formData, interval: parseInt(e.target.value) })}
-                    className="w-full h-2 bg-dark-700 rounded-lg appearance-none cursor-pointer accent-status-up"
+                    className="w-full h-2 bg-dark-bg rounded-lg appearance-none cursor-pointer accent-status-up border border-dark-border"
                     disabled={loading}
                   />
                 </div>
-                <div className="flex items-center gap-2 bg-dark-700/50 px-4 py-2 rounded-lg border border-dark-600/50 min-w-fit">
+                <div className="flex items-center gap-2 bg-dark-bg px-4 py-2 rounded-lg border border-dark-border min-w-fit">
                   <input
                     type="number"
                     id="interval"
@@ -385,17 +385,17 @@ function AddService() {
                     onChange={handleInputChange}
                     min="10"
                     max="3600"
-                    className="w-16 bg-dark-700/50 text-dark-50 font-semibold text-center focus:outline-none"
+                    className="w-16 bg-transparent text-dark-text font-semibold text-center focus:outline-none"
                     disabled={loading}
                   />
-                  <span className="text-dark-400 font-medium">sec</span>
+                  <span className="text-dark-muted font-medium">sec</span>
                 </div>
               </div>
-              <p className="text-xs text-dark-500">How often to check uptime (10 seconds to 1 hour)</p>
+              <p className="text-xs text-dark-muted">How often to check uptime (10 seconds to 1 hour)</p>
             </div>
 
             {/* Active Toggle */}
-            <div className="flex items-center gap-4 p-4 bg-dark-900/50 rounded-lg border border-dark-700/30">
+            <div className="flex items-center gap-4 p-4 bg-dark-bg rounded-lg border border-dark-border">
               <input
                 type="checkbox"
                 id="active"
@@ -405,31 +405,31 @@ function AddService() {
                 className="w-5 h-5 rounded cursor-pointer accent-status-up"
                 disabled={loading}
               />
-              <label htmlFor="active" className="text-sm font-semibold text-dark-50 cursor-pointer flex-1">
+              <label htmlFor="active" className="text-sm font-semibold text-dark-text cursor-pointer flex-1">
                 Enable Monitoring
-                <p className="text-xs text-dark-500 font-normal mt-1">Start monitoring this service immediately</p>
+                <p className="text-xs text-dark-muted font-normal mt-1">Start monitoring this service immediately</p>
               </label>
             </div>
 
             {/* Public Toggle */}
-            <div className="flex items-center gap-4 p-4 bg-dark-900/50 rounded-lg border border-dark-700/30">
+            <div className="flex items-center gap-4 p-4 bg-dark-bg rounded-lg border border-dark-border">
               <input
                 type="checkbox"
                 id="is_public"
                 name="is_public"
                 checked={formData.is_public}
                 onChange={handleInputChange}
-                className="w-5 h-5 rounded cursor-pointer accent-blue-500"
+                className="w-5 h-5 rounded cursor-pointer accent-[#3498db]"
                 disabled={loading}
               />
-              <label htmlFor="is_public" className="text-sm font-semibold text-dark-50 cursor-pointer flex-1">
+              <label htmlFor="is_public" className="text-sm font-semibold text-dark-text cursor-pointer flex-1">
                 Show on Public Status Page
-                <p className="text-xs text-dark-500 font-normal mt-1">Make this service visible without login</p>
+                <p className="text-xs text-dark-muted font-normal mt-1">Make this service visible without login</p>
               </label>
             </div>
 
             {/* Form Actions */}
-            <div className="flex gap-3 pt-8 border-t border-dark-700/30">
+            <div className="flex gap-3 pt-8 border-t border-dark-border">
               <button
                 type="submit"
                 disabled={loading}
@@ -458,23 +458,23 @@ function AddService() {
 
         {/* Tips Section */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card p-6 bg-gradient-to-br from-blue-950/30 to-blue-900/20 border border-blue-900/30">
-            <h3 className="font-bold text-dark-50 mb-3 flex items-center gap-2">
+          <div className="card p-6 border-dark-border bg-dark-card">
+            <h3 className="font-bold text-dark-text mb-3 flex items-center gap-2">
               <span className="text-xl">🌐</span> Websites
             </h3>
-            <p className="text-sm text-dark-400 leading-relaxed">Monitor HTTP/HTTPS endpoints for uptime and response times.</p>
+            <p className="text-sm text-dark-muted leading-relaxed">Monitor HTTP/HTTPS endpoints for uptime and response times.</p>
           </div>
-          <div className="card p-6 bg-gradient-to-br from-green-950/30 to-green-900/20 border border-green-900/30">
-            <h3 className="font-bold text-dark-50 mb-3 flex items-center gap-2">
+          <div className="card p-6 border-dark-border bg-dark-card">
+            <h3 className="font-bold text-dark-text mb-3 flex items-center gap-2">
               <span className="text-xl">📡</span> ICMP Ping
             </h3>
-            <p className="text-sm text-dark-400 leading-relaxed">Check if devices are reachable using ping (ICMP protocol).</p>
+            <p className="text-sm text-dark-muted leading-relaxed">Check if devices are reachable using ping (ICMP protocol).</p>
           </div>
-          <div className="card p-6 bg-gradient-to-br from-purple-950/30 to-purple-900/20 border border-purple-900/30">
-            <h3 className="font-bold text-dark-50 mb-3 flex items-center gap-2">
+          <div className="card p-6 border-dark-border bg-dark-card">
+            <h3 className="font-bold text-dark-text mb-3 flex items-center gap-2">
               <span className="text-xl">🔌</span> TCP Port
             </h3>
-            <p className="text-sm text-dark-400 leading-relaxed">Monitor specific ports on devices (SSH, RDP, databases).</p>
+            <p className="text-sm text-dark-muted leading-relaxed">Monitor specific ports on devices (SSH, RDP, databases).</p>
           </div>
         </div>
       </div>

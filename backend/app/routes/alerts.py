@@ -1,12 +1,14 @@
 """API routes for alerts management."""
 
 import logging
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from app.db import get_db
 from app.auth import get_current_user
+from app.alerts import send_alert_email, validate_smtp_config
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +23,12 @@ def create_alert(
 ):
     """
     Create email alert for service status changes.
-    
+
     Args:
         alert_data: Alert configuration
         db: Database session
         current_user: Current authenticated user
-        
+
     Returns:
         Created alert
     """
@@ -56,11 +58,11 @@ def list_alerts(
 ):
     """
     List all alerts.
-    
+
     Args:
         db: Database session
         current_user: Current authenticated user
-        
+
     Returns:
         List of alerts
     """
@@ -85,33 +87,82 @@ def list_alerts(
 
 
 @router.post("/test")
-def test_alert(
+async def test_alert(
     alert_data: dict,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
     """
-    Send test alert email.
-    
+    Send test alert email. Actually calls the SMTP send function
+    and returns success/failure with details.
+
     Args:
-        alert_data: Alert test data
+        alert_data: Alert test data (requires 'email' field)
         db: Database session
         current_user: Current authenticated user
-        
+
     Returns:
-        Test result
+        Test result with status and error details if failed
     """
-    try:
-        logger.info(f"Test alert sent to {alert_data.get('email')}")
-        return {
-            "status": "success",
-            "message": f"Test alert sent to {alert_data.get('email')}",
-            "service_id": alert_data.get("service_id"),
-            "reason": alert_data.get("reason")
-        }
-    except Exception as e:
-        logger.error(f"Test alert error: {str(e)}")
+    recipient = alert_data.get("email")
+    service_name = alert_data.get("service_name", "Test Service")
+    service_id = alert_data.get("service_id", 0)
+    reason = alert_data.get("reason", "Manual test alert")
+
+    if not recipient:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required field: 'email'",
         )
+
+    # Check SMTP config before attempting send
+    smtp_status = validate_smtp_config()
+    if not smtp_status["configured"]:
+        return {
+            "status": "error",
+            "message": (
+                f"SMTP is not configured. Missing environment variables: "
+                f"{', '.join(smtp_status['missing'])}. "
+                "Set these in your .env or environment before sending emails."
+            ),
+            "missing_config": smtp_status["missing"],
+        }
+
+    # Actually attempt to send the test email
+    try:
+        logger.info(f"Sending test alert email to {recipient}")
+        success = await send_alert_email(
+            recipient=recipient,
+            service_name=service_name,
+            status="DOWN",
+            timestamp=datetime.now(timezone.utc),
+            service_id=service_id,
+            error_message=f"Test alert: {reason}",
+        )
+
+        if success:
+            return {
+                "status": "success",
+                "message": f"Test alert email sent successfully to {recipient}",
+                "service_id": service_id,
+                "reason": reason,
+            }
+        else:
+            return {
+                "status": "error",
+                "message": (
+                    f"Failed to send test alert email to {recipient}. "
+                    "Check server logs for detailed SMTP error."
+                ),
+                "service_id": service_id,
+                "reason": reason,
+            }
+
+    except Exception as e:
+        logger.error(f"Test alert error: {type(e).__name__}: {str(e)}")
+        return {
+            "status": "error",
+            "message": f"Failed to send test alert: {type(e).__name__}: {str(e)}",
+            "service_id": service_id,
+            "reason": reason,
+        }

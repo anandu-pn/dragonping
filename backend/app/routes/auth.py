@@ -31,17 +31,26 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         HTTPException: If email already exists (400) or other database error
     """
     try:
-        # Check if user already exists
-        existing_user = db.query(User).filter(User.email == user_data.email).first()
-        if existing_user:
+        # Check if email already exists
+        existing_email = db.query(User).filter(User.email == user_data.email).first()
+        if existing_email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered",
+            )
+            
+        # Check if username already exists
+        existing_username = db.query(User).filter(User.username == user_data.username).first()
+        if existing_username:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already taken",
             )
 
         # Create new user with hashed password
         hashed_password = hash_password(user_data.password)
         new_user = User(
+            username=user_data.username,
             email=user_data.email,
             password_hash=hashed_password,
             is_admin=False,  # New users are not admins by default
@@ -62,7 +71,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
+            detail="Email or username already registered",
         )
     except Exception as e:
         db.rollback()

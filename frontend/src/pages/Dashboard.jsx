@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { RefreshCw, AlertCircle, TrendingUp } from 'lucide-react'
+import { RefreshCw, AlertCircle, TrendingUp, Activity } from 'lucide-react'
 import ServiceCard from '../components/ServiceCard'
 import ResponseChart from '../components/ResponseChart'
 import { getServices, getStatusSummary, getServiceStatus, getServiceChecks, deleteService } from '../api/services'
@@ -105,138 +105,114 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-950 to-darker pb-12">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-12">
+    <div className="min-h-screen bg-dark-bg pb-12 font-sans">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12 animate-fade-in">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="section-title">Dashboard</h1>
-            <p className="section-subtitle">Monitor your website uptime in real-time</p>
+            <h1 className="text-2xl font-bold text-dark-text">Dashboard</h1>
+            <p className="text-sm text-dark-muted mt-1">Monitor your services</p>
           </div>
           <button
             onClick={fetchData}
             disabled={loading}
-            className="p-3 text-dark-400 hover:text-status-up hover:bg-dark-700/50 rounded-xl transition-all duration-300 disabled:opacity-50 hover:scale-110"
+            className="p-2 text-dark-muted hover:text-[#3498db] hover:bg-dark-card rounded-md transition-colors disabled:opacity-50"
             title="Refresh"
           >
-            <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin-slow' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin-slow' : ''}`} />
           </button>
         </div>
 
         {/* Summary Stats */}
         {summary && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div className="stat-card group cursor-default">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-dark-400 text-xs font-semibold uppercase tracking-wide mb-3">Total Services</p>
-                  <p className="text-4xl font-bold text-dark-50">{summary.total_services}</p>
-                  <p className="text-dark-500 text-xs mt-3">Services being monitored</p>
-                </div>
-                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-3 rounded-xl group-hover:from-blue-500/30 group-hover:to-blue-600/20 transition-all">
-                  <TrendingUp className="w-8 h-8 text-blue-400" />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-dark-card border border-dark-border rounded-md p-5 shadow-sm">
+              <p className="text-xs font-semibold text-dark-muted uppercase tracking-wide mb-2">Total Services</p>
+              <p className="text-3xl font-bold text-dark-text">{summary.total_services}</p>
             </div>
 
-            <div className="stat-card group cursor-default">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-dark-400 text-xs font-semibold uppercase tracking-wide mb-3">Online</p>
-                  <p className="text-4xl font-bold text-status-up">{summary.up_services}</p>
-                  <p className="text-dark-500 text-xs mt-3">Operational</p>
-                </div>
-                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 p-3 rounded-xl group-hover:from-green-500/30 group-hover:to-green-600/20 transition-all">
-                  <span className="text-2xl">✓</span>
-                </div>
-              </div>
+            <div className="bg-dark-card border border-dark-border rounded-md p-5 shadow-sm">
+              <p className="text-xs font-semibold text-dark-muted uppercase tracking-wide mb-2">Online</p>
+              <p className="text-3xl font-bold text-[#50b83c]">{summary.up_services}</p>
             </div>
 
-            <div className="stat-card group cursor-default">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-dark-400 text-xs font-semibold uppercase tracking-wide mb-3">Offline</p>
-                  <p className="text-4xl font-bold text-status-down">{summary.down_services}</p>
-                  <p className="text-dark-500 text-xs mt-3">Need attention</p>
-                </div>
-                <div className="bg-gradient-to-br from-red-500/20 to-red-600/10 p-3 rounded-xl group-hover:from-red-500/30 group-hover:to-red-600/20 transition-all">
-                  <span className="text-2xl">✕</span>
-                </div>
-              </div>
+            <div className="bg-dark-card border border-dark-border rounded-md p-5 shadow-sm">
+              <p className="text-xs font-semibold text-dark-muted uppercase tracking-wide mb-2">Offline</p>
+              <p className="text-3xl font-bold text-[#e74c3c]">{summary.down_services}</p>
             </div>
 
-            <div className="stat-card group cursor-default">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-dark-400 text-xs font-semibold uppercase tracking-wide mb-3">Uptime</p>
-                  <p className="text-4xl font-bold text-gradient">
-                    {summary.total_services > 0
-                      ? ((summary.up_services / summary.total_services) * 100).toFixed(1)
-                      : 0}
-                    <span className="text-xl">%</span>
-                  </p>
-                  <p className="text-dark-500 text-xs mt-3">This period</p>
-                </div>
-                <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/10 p-3 rounded-xl group-hover:from-amber-500/30 group-hover:to-amber-600/20 transition-all">
-                  <span className="text-2xl">📊</span>
-                </div>
-              </div>
+            <div className="bg-dark-card border border-dark-border rounded-md p-5 shadow-sm">
+              <p className="text-xs font-semibold text-dark-muted uppercase tracking-wide mb-2">Overall Uptime</p>
+              <p className="text-3xl font-bold text-[#3498db]">
+                {summary.total_services > 0
+                  ? ((summary.up_services / summary.total_services) * 100).toFixed(1)
+                  : 0}
+                <span className="text-xl">%</span>
+              </p>
             </div>
           </div>
         )}
 
       {/* Error Message */}
       {error && (
-        <div className="card bg-gradient-to-r from-red-950/50 to-red-900/30 border border-red-900/50 p-5 flex items-center gap-4 shadow-lg shadow-red-500/10">
-          <AlertCircle className="w-6 h-6 text-status-down flex-shrink-0" />
-          <p className="text-red-100 font-medium">{error}</p>
+        <div className="bg-[#e74c3c]/10 border-l-4 border-[#e74c3c] p-4 mb-8 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-[#e74c3c] flex-shrink-0" />
+          <p className="text-[#e74c3c] font-medium text-sm">{error}</p>
         </div>
       )}
 
       {/* Services Grid */}
       {services.length > 0 ? (
-        <div className="animate-fade-in">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-dark-50">Services</h2>
-            <p className="text-dark-500 text-sm mt-2">{services.length} service{services.length !== 1 ? 's' : ''} monitored</p>
+        <div className="flex flex-col md:flex-row gap-6">
+          
+          <div className="flex-1">
+            <div className="bg-dark-card border border-dark-border rounded-md shadow-sm overflow-hidden mb-8">
+              <div className="bg-dark-bg border-b border-dark-border px-6 py-3 flex justify-between items-center">
+                 <span className="font-semibold text-dark-text text-sm">Service List</span>
+              </div>
+              <div className="divide-y divide-dark-border">
+                {services.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    onDelete={handleDeleteService}
+                    onClick={() => handleServiceSelect(service.id)}
+                    isSelected={selectedServiceId === service.id}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="grid-responsive">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                onDelete={handleDeleteService}
-                onClick={() => handleServiceSelect(service.id)}
-              />
-            ))}
+
+          <div className="md:w-2/5">
+            {selectedServiceId && selectedChecks.length > 0 ? (
+              <div className="bg-dark-card border border-dark-border rounded-md shadow-sm p-5 sticky top-24">
+                <h3 className="font-semibold text-dark-text mb-4 text-sm">Response Time Trend</h3>
+                <ResponseChart checks={selectedChecks} title="Last 50 Checks" />
+              </div>
+            ) : (
+                <div className="bg-dark-card border border-dark-border rounded-md shadow-sm p-8 text-center text-dark-muted sticky top-24">
+                  <Activity className="w-12 h-12 mx-auto mb-4 text-dark-border" />
+                  <p className="text-sm">Select a service to view response time details.</p>
+                </div>
+            )}
           </div>
         </div>
       ) : (
-        <div className="card p-12 text-center border-2 border-dashed border-dark-600/50 bg-dark-900/50">
-          <AlertCircle className="w-16 h-16 text-dark-600 mx-auto mb-6 opacity-50" />
-          <p className="text-dark-300 mb-2 text-lg font-medium">No services configured yet</p>
-          <p className="text-dark-400 mb-8">Get started by adding your first website to monitor</p>
+        <div className="bg-dark-card border border-dark-border rounded-md shadow-sm p-12 text-center">
+          <AlertCircle className="w-12 h-12 text-dark-border mx-auto mb-4" />
+          <p className="text-dark-text mb-2 font-semibold">No services configured yet</p>
+          <p className="text-dark-muted mb-6 text-sm">Get started by adding your first website to monitor</p>
           <a
             href="/add"
-            className="btn-primary inline-block"
+            className="btn-primary"
           >
-            + Add Your First Service
+            + Add New Service
           </a>
         </div>
       )}
 
-      {/* Response Time Chart */}
-      {selectedServiceId && selectedChecks.length > 0 && (
-        <div className="animate-fade-in mt-12">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-dark-50">Response Time Trend</h2>
-            <p className="text-dark-500 text-sm mt-2">Performance over the last 50 checks</p>
-          </div>
-          <div className="card p-8">
-            <ResponseChart checks={selectedChecks} title="Response Time (Last 50 Checks)" />
-          </div>
-        </div>
-      )}
+
       </div>
     </div>
   )

@@ -10,6 +10,7 @@ from typing import List, Optional
 class UserCreate(BaseModel):
     """Schema for user registration."""
 
+    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     password: str = Field(..., min_length=8)
 
@@ -32,6 +33,7 @@ class UserResponse(BaseModel):
     """Schema for user response."""
 
     id: int
+    username: Optional[str] = None
     email: str
     is_admin: bool
     created_at: datetime
@@ -55,6 +57,7 @@ class ServiceBase(BaseModel):
     is_public: bool = False
     interval: int = Field(30, ge=10, le=3600)  # 10 seconds to 1 hour
     active: bool = True
+    user_id: Optional[int] = None
 
 
 class ServiceCreate(ServiceBase):

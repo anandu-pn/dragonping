@@ -27,9 +27,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-slate-800 rounded-lg shadow-2xl p-8">
+        <div className="bg-dark-card border border-dark-border rounded-lg shadow-sm p-8">
           {/* Logo */}
           <div className="text-center mb-8">
             <img
@@ -37,13 +37,13 @@ export default function Login() {
               alt="DragonPing"
               className="h-16 w-16 mx-auto mb-4"
             />
-            <h1 className="text-3xl font-bold text-white">DragonPing</h1>
-            <p className="text-slate-400 mt-2">Sign in to your account</p>
+            <h1 className="text-3xl font-bold text-dark-text">DragonPing</h1>
+            <p className="text-dark-muted mt-2">Sign in to your account</p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded text-red-200 text-sm">
+            <div className="mb-4 p-3 bg-[#e74c3c]/10 border border-[#e74c3c] rounded text-[#e74c3c] text-sm">
               {error}
             </div>
           )}
@@ -51,7 +51,7 @@ export default function Login() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-dark-text mb-2">
                 Email Address
               </label>
               <input
@@ -61,12 +61,12 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-dark-text mb-2">
                 Password
               </label>
               <input
@@ -76,14 +76,14 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="w-full px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:border-[#3498db] focus:ring-1 focus:ring-[#3498db]"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-600 text-white font-medium rounded-lg transition-colors duration-200"
+              className="w-full px-4 py-2 bg-[#50b83c] hover:bg-[#439c33] disabled:opacity-50 text-white font-medium rounded-lg transition-colors duration-200"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -91,17 +91,17 @@ export default function Login() {
 
           {/* Register Link */}
           <div className="mt-6 text-center">
-            <p className="text-slate-400 text-sm">
+            <p className="text-dark-muted text-sm">
               Don't have an account?{' '}
-              <Link to="/register" className="text-emerald-500 hover:text-emerald-400 font-medium">
+              <Link to="/register" className="text-[#3498db] hover:text-[#2980b9] font-medium">
                 Sign up here
               </Link>
             </p>
           </div>
 
           {/* Divider */}
-          <div className="mt-6 pt-6 border-t border-slate-700">
-            <p className="text-slate-500 text-xs text-center">
+          <div className="mt-6 pt-6 border-t border-dark-border">
+            <p className="text-dark-muted text-xs text-center">
               Demo credentials: admin@example.com / password123
             </p>
           </div>

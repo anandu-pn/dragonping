@@ -21,35 +21,32 @@ function Navbar() {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-dark-800/80 to-dark-900/80 border-b border-dark-700/30 backdrop-blur-md sticky top-0 z-50 shadow-lg shadow-dark-950/50">
+    <nav className="bg-dark-card border-b border-dark-border sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 group">
-            <div className="relative">
-              <Activity className="w-8 h-8 text-status-up group-hover:scale-110 transition-transform" />
-              <div className="absolute inset-0 bg-status-up/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Activity className="w-7 h-7 text-[#50b83c]" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gradient hidden sm:inline">DragonPing</span>
-              <span className="text-xs text-dark-500 hidden sm:inline">Uptime Monitor</span>
-              <span className="text-lg font-bold text-gradient sm:hidden">DP</span>
+              <span className="text-xl font-bold text-dark-text hidden sm:inline leading-none">DragonPing</span>
+              <span className="text-[10px] text-dark-muted hidden sm:inline tracking-wide font-medium">UPTIME MONITOR</span>
+              <span className="text-lg font-bold text-dark-text sm:hidden">DP</span>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {navItems.map(({ path, label, icon: Icon }) => (
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 group ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-md font-medium transition-colors text-sm ${
                   isActive(path)
-                    ? 'bg-gradient-to-r from-status-up to-green-500 text-dark-900 shadow-lg shadow-green-500/30'
-                    : 'text-dark-300 hover:text-dark-50 hover:bg-dark-700/50 border border-transparent hover:border-dark-600/30'
+                    ? 'bg-dark-border text-[#3498db]'
+                    : 'text-dark-muted hover:text-dark-text hover:bg-dark-bg'
                 }`}
               >
-                <Icon className={`w-5 h-5 transition-transform ${isActive(path) ? 'scale-110' : 'group-hover:scale-110'}`} />
+                <Icon className="w-4 h-4" />
                 <span className="hidden sm:inline">{label}</span>
               </Link>
             ))}
@@ -58,16 +55,16 @@ function Navbar() {
           {/* User Info and Logout */}
           <div className="flex items-center gap-4">
             {/* Status Indicator */}
-            <div className="flex items-center gap-2 text-sm text-dark-300">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-dark-700/50 border border-green-900/30 backdrop-blur-sm">
-                <div className="w-2.5 h-2.5 bg-status-up rounded-full animate-pulse shadow-lg shadow-status-up/50"></div>
-                <span className="hidden sm:inline font-medium">Live</span>
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#50b83c]/10 border border-[#50b83c]/20">
+                <div className="w-2 h-2 bg-[#50b83c] rounded-full"></div>
+                <span className="hidden sm:inline font-medium text-[#50b83c] text-xs">Live</span>
               </div>
             </div>
 
             {/* User Email */}
             {user && (
-              <span className="text-sm font-medium text-dark-300 hidden sm:inline">
+              <span className="text-sm font-medium text-dark-muted hidden sm:inline">
                 {user.email}
               </span>
             )}
@@ -75,10 +72,10 @@ function Navbar() {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 text-dark-300 hover:text-red-400 hover:bg-dark-700/50 border border-transparent hover:border-red-900/30"
+              className="flex items-center gap-2 px-3 py-2 rounded-md font-medium transition-colors text-dark-muted hover:text-[#e74c3c] hover:bg-dark-bg text-sm border border-transparent"
               title="Logout"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Logout</span>
             </button>
           </div>

@@ -7,22 +7,17 @@ export default {
     extend: {
       colors: {
         dark: {
-          50: '#f9fafb',
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+          bg: '#0d1117',
+          card: '#161b22',
+          border: '#30363d',
+          text: '#c9d1d9',
+          muted: '#8b949e',
         },
         status: {
-          up: '#10b981',
-          down: '#ef4444',
-          slow: '#f59e0b',
-          unknown: '#6b7280'
+          up: '#50b83c',
+          down: '#e74c3c',
+          slow: '#f39c12',
+          unknown: '#95a5a6'
         }
       },
       fontFamily: {

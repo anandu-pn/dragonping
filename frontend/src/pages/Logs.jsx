@@ -129,7 +129,7 @@ function Logs() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <RefreshCw className="w-12 h-12 text-status-up animate-spin mx-auto mb-4" />
-          <p className="text-dark-400">Loading logs...</p>
+          <p className="text-dark-muted">Loading logs...</p>
         </div>
       </div>
     )
@@ -140,28 +140,28 @@ function Logs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-dark-50">Check History</h1>
-          <p className="text-dark-400 mt-2">View detailed logs of all service checks</p>
+          <h1 className="text-3xl font-bold text-dark-text">Check History</h1>
+          <p className="text-dark-muted mt-2">View detailed logs of all service checks</p>
         </div>
         <button
           onClick={() => selectedServiceId && fetchChecks(selectedServiceId)}
           disabled={loading}
-          className="p-2 text-dark-400 hover:text-status-up hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50"
+          className="p-2 text-dark-muted hover:text-[#3498db] hover:bg-dark-card rounded-lg transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       {error && (
-        <div className="card bg-red-950 border-red-900 p-4 flex items-center gap-3">
+        <div className="card bg-[#e74c3c]/10 border-[#e74c3c] p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-status-down flex-shrink-0" />
-          <p className="text-red-100">{error}</p>
+          <p className="text-[#e74c3c] font-medium">{error}</p>
         </div>
       )}
 
       {/* Service Selector */}
       <div className="card p-4">
-        <label htmlFor="service-select" className="block text-sm font-medium text-dark-50 mb-2">
+        <label htmlFor="service-select" className="block text-sm font-medium text-dark-text mb-2">
           Select Service
         </label>
         <select
@@ -182,20 +182,20 @@ function Logs() {
       {selectedService && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="card p-6">
-            <p className="text-dark-400 text-sm">Total Checks</p>
-            <p className="text-3xl font-bold text-dark-50">{checks.length}</p>
+            <p className="text-dark-muted text-sm uppercase font-semibold tracking-wide">Total Checks</p>
+            <p className="text-3xl font-bold text-dark-text mt-2">{checks.length}</p>
           </div>
           <div className="card p-6">
-            <p className="text-dark-400 text-sm">Up</p>
-            <p className="text-3xl font-bold text-status-up">{upCount}</p>
+            <p className="text-dark-muted text-sm uppercase font-semibold tracking-wide">Up</p>
+            <p className="text-3xl font-bold text-status-up mt-2">{upCount}</p>
           </div>
           <div className="card p-6">
-            <p className="text-dark-400 text-sm">Down</p>
-            <p className="text-3xl font-bold text-status-down">{downCount}</p>
+            <p className="text-dark-muted text-sm uppercase font-semibold tracking-wide">Down</p>
+            <p className="text-3xl font-bold text-status-down mt-2">{downCount}</p>
           </div>
           <div className="card p-6">
-            <p className="text-dark-400 text-sm">Avg Response</p>
-            <p className="text-3xl font-bold text-dark-50">
+            <p className="text-dark-muted text-sm uppercase font-semibold tracking-wide">Avg Response</p>
+            <p className="text-3xl font-bold text-[#3498db] mt-2">
               {avgResponseTime < 1000 ? `${Math.round(avgResponseTime)}ms` : `${(avgResponseTime / 1000).toFixed(2)}s`}
             </p>
           </div>
@@ -218,10 +218,10 @@ function Logs() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-dark-700 bg-dark-900">
+                <tr className="border-b border-dark-border bg-dark-bg">
                   <th
                     onClick={() => handleSort('checked_at')}
-                    className="px-6 py-3 text-left text-sm font-semibold text-dark-50 cursor-pointer hover:bg-dark-800 transition-colors"
+                    className="px-6 py-3 text-left text-sm font-semibold text-dark-text cursor-pointer hover:bg-dark-border/30 transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       Time
@@ -236,7 +236,7 @@ function Logs() {
                   </th>
                   <th
                     onClick={() => handleSort('status')}
-                    className="px-6 py-3 text-left text-sm font-semibold text-dark-50 cursor-pointer hover:bg-dark-800 transition-colors"
+                    className="px-6 py-3 text-left text-sm font-semibold text-dark-text cursor-pointer hover:bg-dark-border/30 transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       Status
@@ -251,7 +251,7 @@ function Logs() {
                   </th>
                   <th
                     onClick={() => handleSort('response_time')}
-                    className="px-6 py-3 text-left text-sm font-semibold text-dark-50 cursor-pointer hover:bg-dark-800 transition-colors"
+                    className="px-6 py-3 text-left text-sm font-semibold text-dark-text cursor-pointer hover:bg-dark-border/30 transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       Response Time
@@ -264,15 +264,15 @@ function Logs() {
                       )}
                     </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-dark-50">Status Code</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-dark-50">Error</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-dark-text">Status Code</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-dark-text">Error</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedChecks.slice(0, 100).map((check) => (
-                  <tr key={check.id} className="border-b border-dark-700 hover:bg-dark-800 transition-colors">
+                  <tr key={check.id} className="border-b border-dark-border hover:bg-dark-border/30 transition-colors">
                     <td
-                      className="px-6 py-4 text-sm text-dark-300 cursor-pointer"
+                      className="px-6 py-4 text-sm text-dark-muted cursor-pointer"
                       onClick={() => toggleCheckExpanded(check.id)}
                     >
                       {new Date(check.checked_at).toLocaleString()}
@@ -280,7 +280,7 @@ function Logs() {
                     <td className="px-6 py-4 text-sm">
                       <StatusBadge status={check.status} responseTime={check.response_time} />
                     </td>
-                    <td className="px-6 py-4 text-sm text-dark-300">
+                    <td className="px-6 py-4 text-sm text-dark-muted">
                       {check.response_time ? (
                         check.response_time < 1000 ? (
                           `${Math.round(check.response_time)}ms`
@@ -291,8 +291,8 @@ function Logs() {
                         'N/A'
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-dark-300">{check.status_code || 'N/A'}</td>
-                    <td className="px-6 py-4 text-sm text-dark-300 max-w-xs truncate">
+                    <td className="px-6 py-4 text-sm text-dark-muted">{check.status_code || 'N/A'}</td>
+                    <td className="px-6 py-4 text-sm text-dark-muted max-w-xs truncate">
                       {check.error_message ? (
                         <span
                           title={check.error_message}
@@ -311,15 +311,15 @@ function Logs() {
           </div>
 
           {sortedChecks.length > 100 && (
-            <div className="px-6 py-3 bg-dark-900 text-sm text-dark-400 border-t border-dark-700">
+            <div className="px-6 py-3 bg-dark-bg text-sm text-dark-muted border-t border-dark-border">
               Showing 100 of {sortedChecks.length} checks
             </div>
           )}
         </div>
       ) : (
         <div className="card p-12 text-center">
-          <AlertCircle className="w-12 h-12 text-dark-600 mx-auto mb-4" />
-          <p className="text-dark-400">No check history available</p>
+          <AlertCircle className="w-12 h-12 text-dark-border mx-auto mb-4" />
+          <p className="text-dark-muted">No check history available</p>
         </div>
       )}
     </div>

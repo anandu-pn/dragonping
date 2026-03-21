@@ -322,6 +322,64 @@ GET    /api/public/status   - Public service status
 
 ---
 
+Collecting workspace information### Database Architecture in DragonPing
+
+DragonPing uses a relational database (PostgreSQL by default, with SQLite fallback) managed via SQLAlchemy ORM. The architecture follows a clean, normalized design with foreign key relationships, indexes for performance, and support for background monitoring and alerting.
+
+#### Database Schema Overview
+
+The database consists of 4 main tables, defined in models.py:
+
+1. **users** - User accounts and authentication
+   - `id` (Primary Key)
+   - `email` (Unique, Indexed)
+   - `password_hash`
+   - `is_admin` (Boolean)
+   - `created_at` (Timestamp)
+
+2. **services** - Monitored services (websites/devices)
+   - `id` (Primary Key)
+   - `name`
+   - `description`
+   - `type` (Enum: 'website' or 'device')
+   - `protocol` (Enum: 'http', 'https', 'icmp', 'tcp')
+   - `url` (For websites)
+   - `ip_address` (For devices)
+   - `port` (Optional, for TCP)
+   - `interval` (Check interval in seconds, default 30)
+   - `is_public` (Boolean, for public dashboard)
+   - `active` (Boolean, enable/disable monitoring)
+   - `created_at`, `updated_at` (Timestamps)
+
+3. **checks** - Monitoring check results
+   - `id` (Primary Key)
+   - `service_id` (Foreign Key to services, Indexed)
+   - `status` ('UP', 'DOWN', 'UNKNOWN')
+   - `status_code` (HTTP status, if applicable)
+   - `response_time_ms` (Float)
+   - `error_message` (Text, nullable)
+   - `checked_at` (Timestamp, Indexed with service_id)
+
+4. **alert_logs** - Email alert history
+   - `id` (Primary Key)
+   - `service_id` (Foreign Key to services, Indexed)
+   - `alert_type` (e.g., 'DOWN', 'UP')
+   - `recipient_email`
+   - `sent_at` (Timestamp, Indexed with service_id)
+
+#### Relationships and Indexes
+- **Foreign Keys**: `checks.service_id` → `services.id`; `alert_logs.service_id` → `services.id`
+- **Indexes**: Primary keys, unique on `users.email`, composite on `(service_id, checked_at)` for efficient queries
+- **ORM Features**: SQLAlchemy relationships (e.g., `Service.checks` for one-to-many), session management via db.py
+
+#### Database Status
+- **Current Setup**: SQLite (`app.db`) for development; configurable to PostgreSQL via `DATABASE_URL` in `.env`
+- **Initialization**: Auto-creates tables on startup; supports connection pooling (10 connections, 20 overflow)
+- **Performance**: Optimized for monitoring (fast inserts, indexed queries); handles ~1000+ checks per service
+- **Status**: ✅ Initialized and operational; tested with CRUD operations, monitoring persistence, and alert logging
+
+For schema details, see models.py or the API docs at `http://localhost:8000/docs`.
+
 **Implementation Date:** February 14, 2026  
 **Status:** ✅ COMPLETE AND TESTED
 

@@ -20,6 +20,44 @@ SMTP_FROM_EMAIL = getenv("SMTP_FROM_EMAIL")
 ADMIN_EMAIL = getenv("ADMIN_EMAIL")
 PUBLIC_DASHBOARD_URL = getenv("PUBLIC_DASHBOARD_URL", "http://localhost:3000/public")
 
+# Max retry attempts for transient SMTP failures
+MAX_RETRIES = 3
+RETRY_DELAY_SECONDS = 2
+
+
+def validate_smtp_config() -> dict:
+    """
+    Validate SMTP configuration at startup.
+
+    Returns:
+        Dictionary with 'configured' bool and list of 'missing' env vars
+    """
+    required = {
+        "SMTP_HOST": SMTP_HOST,
+        "SMTP_PORT": SMTP_PORT,
+        "SMTP_USER": SMTP_USER,
+        "SMTP_PASS": SMTP_PASS,
+        "SMTP_FROM_EMAIL": SMTP_FROM_EMAIL,
+    }
+    missing = [k for k, v in required.items() if not v]
+
+    if missing:
+        logger.warning(
+            f"SMTP not fully configured — missing env vars: {', '.join(missing)}. "
+            "Email alerts will be disabled until these are set."
+        )
+        return {"configured": False, "missing": missing}
+
+    logger.info(
+        f"SMTP configured: host={SMTP_HOST}, port={SMTP_PORT}, "
+        f"user={SMTP_USER}, from={SMTP_FROM_EMAIL}"
+    )
+    return {"configured": True, "missing": []}
+
+
+# Run validation on module import so it logs at startup
+_smtp_status = validate_smtp_config()
+
 
 def create_alert_email(
     service_name: str,
@@ -103,7 +141,7 @@ async def send_alert_email(
     error_message: Optional[str] = None,
 ) -> bool:
     """
-    Send alert email to recipient.
+    Send alert email to recipient with retry logic.
 
     Args:
         recipient: Email address to send to
@@ -116,36 +154,94 @@ async def send_alert_email(
     Returns:
         True if sent successfully, False otherwise
     """
-    if not SMTP_USER or not SMTP_PASS or not SMTP_FROM_EMAIL:
-        logger.warning("SMTP not configured, skipping email alert")
-        return False
-
-    try:
-        subject, html_body = create_alert_email(
-            service_name, status, timestamp, service_id, error_message
+    if not _smtp_status["configured"]:
+        logger.warning(
+            f"Skipping email to {recipient} — SMTP not configured "
+            f"(missing: {', '.join(_smtp_status['missing'])})"
         )
-
-        # Create email message
-        message = MIMEMultipart("alternative")
-        message["Subject"] = subject
-        message["From"] = SMTP_FROM_EMAIL
-        message["To"] = recipient
-
-        # Attach HTML body
-        html_part = MIMEText(html_body, "html")
-        message.attach(html_part)
-
-        # Send via SMTP
-        async with aiosmtplib.SMTP(hostname=SMTP_HOST, port=SMTP_PORT) as smtp:
-            await smtp.login(SMTP_USER, SMTP_PASS)
-            await smtp.send_message(message)
-
-        logger.info(f"Alert email sent to {recipient}: {service_name} {status}")
-        return True
-
-    except Exception as e:
-        logger.error(f"Failed to send alert email to {recipient}: {str(e)}")
         return False
+
+    subject, html_body = create_alert_email(
+        service_name, status, timestamp, service_id, error_message
+    )
+
+    # Create email message
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = SMTP_FROM_EMAIL
+    message["To"] = recipient
+
+    html_part = MIMEText(html_body, "html")
+    message.attach(html_part)
+
+    last_exception = None
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            logger.info(
+                f"Sending alert email to {recipient} "
+                f"(attempt {attempt}/{MAX_RETRIES}): {service_name} {status}"
+            )
+
+            # Use start_tls=True for port 587 (STARTTLS), use_tls=True for port 465 (SSL)
+            use_tls = SMTP_PORT == 465
+            start_tls = SMTP_PORT == 587
+
+            async with aiosmtplib.SMTP(
+                hostname=SMTP_HOST,
+                port=SMTP_PORT,
+                use_tls=use_tls,
+                start_tls=start_tls,
+                timeout=30,
+            ) as smtp:
+                await smtp.login(SMTP_USER, SMTP_PASS)
+                await smtp.send_message(message)
+
+            logger.info(
+                f"✅ Alert email sent successfully to {recipient}: "
+                f"{service_name} {status} (attempt {attempt})"
+            )
+            return True
+
+        except aiosmtplib.SMTPAuthenticationError as e:
+            logger.error(
+                f"❌ SMTP authentication failed for {recipient}: {e}. "
+                "Check SMTP_USER/SMTP_PASS credentials. Not retrying."
+            )
+            return False
+
+        except (aiosmtplib.SMTPConnectError, aiosmtplib.SMTPConnectTimeoutError) as e:
+            last_exception = e
+            logger.warning(
+                f"⚠️ SMTP connection error on attempt {attempt}/{MAX_RETRIES} "
+                f"to {recipient}: {e}"
+            )
+
+        except aiosmtplib.SMTPException as e:
+            last_exception = e
+            logger.warning(
+                f"⚠️ SMTP error on attempt {attempt}/{MAX_RETRIES} "
+                f"to {recipient}: {e}"
+            )
+
+        except Exception as e:
+            last_exception = e
+            logger.error(
+                f"❌ Unexpected error sending email to {recipient} "
+                f"on attempt {attempt}/{MAX_RETRIES}: {type(e).__name__}: {e}"
+            )
+
+        # Wait before retrying (except on last attempt)
+        if attempt < MAX_RETRIES:
+            delay = RETRY_DELAY_SECONDS * attempt
+            logger.info(f"Retrying in {delay}s...")
+            await asyncio.sleep(delay)
+
+    logger.error(
+        f"❌ Failed to send alert email to {recipient} after {MAX_RETRIES} attempts. "
+        f"Last error: {last_exception}"
+    )
+    return False
 
 
 async def send_alerts(
@@ -179,7 +275,22 @@ async def send_alerts(
     ]
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    successful = sum(1 for r in results if r is True)
 
-    logger.info(f"Alert complete: {successful}/{len(recipients)} sent for {service_name}")
+    # Log individual results and count successes
+    successful = 0
+    for recipient, result in zip(recipients, results):
+        if isinstance(result, Exception):
+            logger.error(
+                f"❌ Unhandled exception sending alert to {recipient}: "
+                f"{type(result).__name__}: {result}"
+            )
+        elif result is True:
+            successful += 1
+        else:
+            logger.warning(f"⚠️ Alert to {recipient} returned failure (result={result})")
+
+    logger.info(
+        f"Alert dispatch complete for {service_name}: "
+        f"{successful}/{len(recipients)} sent successfully"
+    )
     return successful

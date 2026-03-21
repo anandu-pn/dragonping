@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models import Service, Check
-from app.schemas import CheckResponse, ServiceStats
+from app.schemas import CheckResponse, ServiceStats, UserResponse
 from app.services.monitoring_service import MonitoringService
+from app.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/api/status", tags=["status"])
 
 
 @router.get("/service/{service_id}", response_model=ServiceStats)
-def get_service_status(service_id: int, db: Session = Depends(get_db)):
+def get_service_status(service_id: int, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     """
     Get current status and statistics for a service.
 
@@ -32,6 +33,11 @@ def get_service_status(service_id: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
         )
+        
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
 
     stats = MonitoringService.get_service_stats(db, service_id)
 
@@ -40,7 +46,7 @@ def get_service_status(service_id: int, db: Session = Depends(get_db)):
 
 @router.get("/service/{service_id}/checks", response_model=list[CheckResponse])
 def get_service_checks(
-    service_id: int, limit: int = 50, db: Session = Depends(get_db)
+    service_id: int, limit: int = 50, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)
 ):
     """
     Get recent checks for a service.
@@ -60,6 +66,11 @@ def get_service_checks(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
         )
 
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
+
     checks = MonitoringService.get_recent_checks(db, service_id, limit)
 
     return checks
@@ -67,7 +78,7 @@ def get_service_checks(
 
 @router.get("/service/{service_id}/logs", response_model=list[CheckResponse])
 def get_service_logs(
-    service_id: int, limit: int = 50, db: Session = Depends(get_db)
+    service_id: int, limit: int = 50, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)
 ):
     """
     Get service logs (alias for checks).
@@ -87,13 +98,18 @@ def get_service_logs(
             status_code=status.HTTP_404_NOT_FOUND, detail="Service not found"
         )
 
+    if not current_user.is_admin and service.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+        )
+
     logs = MonitoringService.get_recent_checks(db, service_id, limit)
 
     return logs
 
 
 @router.get("/summary")
-def get_all_services_status(db: Session = Depends(get_db)):
+def get_all_services_status(db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     """
     Get status summary for all services.
 
@@ -103,7 +119,10 @@ def get_all_services_status(db: Session = Depends(get_db)):
     Returns:
         Summary of all services
     """
-    services = db.query(Service).all()
+    query = db.query(Service)
+    if not current_user.is_admin:
+        query = query.filter(Service.user_id == current_user.id)
+    services = query.all()
 
     services_stats = []
 
@@ -124,7 +143,7 @@ def get_all_services_status(db: Session = Depends(get_db)):
 
 
 @router.get("/all")
-def get_overall_status(db: Session = Depends(get_db)):
+def get_overall_status(db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     """
     Get overall status (alias for summary).
 
@@ -134,7 +153,10 @@ def get_overall_status(db: Session = Depends(get_db)):
     Returns:
         Overall status summary
     """
-    services = db.query(Service).all()
+    query = db.query(Service)
+    if not current_user.is_admin:
+        query = query.filter(Service.user_id == current_user.id)
+    services = query.all()
 
     services_stats = []
 

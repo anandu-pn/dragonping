@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import axios from 'axios';
 import StatusBadge from '../components/StatusBadge';
 import ResponseChart from '../components/ResponseChart';
@@ -8,8 +8,10 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 export default function PublicStatus() {
   const [searchParams] = useSearchParams();
+  const { username } = useParams();
   const [services, setServices] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,8 +25,8 @@ export default function PublicStatus() {
         setError(null);
 
         const url = serviceId
-          ? `${API_URL.replace('/api', '')}/public/status?service_id=${serviceId}`
-          : `${API_URL.replace('/api', '')}/public/status`;
+          ? `${API_URL}/public/status/${username}?service_id=${serviceId}`
+          : `${API_URL}/public/status/${username}`;
 
         const response = await axios.get(url);
 
@@ -34,10 +36,15 @@ export default function PublicStatus() {
         } else {
           setSummary(response.data.summary);
           setServices(response.data.services);
+          setUserProfile(response.data.user);
         }
       } catch (err) {
         console.error('Failed to fetch public status:', err);
-        setError('Failed to load service status. Please try again.');
+        if (err.response?.status === 404) {
+             setError('User or service not found.');
+        } else {
+             setError('Failed to load service status. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -52,10 +59,10 @@ export default function PublicStatus() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-gray-600">Loading status...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3498db]"></div>
+          <p className="mt-4 text-dark-muted">Loading status...</p>
         </div>
       </div>
     );
@@ -63,161 +70,162 @@ export default function PublicStatus() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Error</h2>
-          <p className="text-gray-600">{error}</p>
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="bg-dark-card border border-dark-border rounded-lg shadow-sm p-6 max-w-md text-center">
+          <div className="text-[#e74c3c] text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-dark-text mb-2">Error</h2>
+          <p className="text-dark-muted">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-dark-bg flex flex-col font-sans">
       {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">DragonPing Status</h1>
-          <p className="text-gray-600 mt-2">Real-time service availability monitoring</p>
+      <div className="bg-dark-card border-b border-dark-border">
+        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+          <h1 className="text-3xl font-bold text-dark-text">
+            {userProfile?.username ? `${userProfile.username}'s Status Page` : 'DragonPing Status'}
+          </h1>
+          <p className="text-dark-muted mt-2">Real-time service availability</p>
         </div>
       </div>
 
-      {/* Summary */}
-      {summary && !serviceId && (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-2xl font-bold text-gray-900">{summary.total_services}</div>
-              <div className="text-gray-600 text-sm mt-2">Total Services</div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-2xl font-bold text-green-600">{summary.up_services}</div>
-              <div className="text-gray-600 text-sm mt-2">Services Up</div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-2xl font-bold text-red-600">{summary.down_services}</div>
-              <div className="text-gray-600 text-sm mt-2">Services Down</div>
-            </div>
+      {/* Main Content */}
+      <div className="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
+        
+        {/* Overall Status Banner */}
+        {!serviceId && summary && (
+          <div className={`rounded-md p-4 mb-8 text-white shadow-sm flex items-center justify-center gap-2 ${
+            summary.down_services === 0 ? 'bg-[#50b83c]' : 'bg-[#e74c3c]'
+          }`}>
+            {summary.down_services === 0 ? (
+               <>
+                 <span className="text-2xl">✓</span>
+                 <span className="font-semibold text-lg">All Systems Operational</span>
+               </>
+            ) : (
+               <>
+                 <span className="text-2xl">✕</span>
+                 <span className="font-semibold text-lg">Some systems are experiencing issues</span>
+               </>
+            )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Services */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-16">
         {serviceId && selectedService ? (
           // Detailed view for single service
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-dark-card rounded-md shadow-sm border border-dark-border overflow-hidden">
             <div className="p-6">
               <a
-                href="/public"
-                className="text-blue-500 hover:text-blue-700 text-sm mb-4 inline-block"
+                href={`/public/${username}`}
+                className="text-[#3498db] hover:underline text-sm mb-6 inline-block font-medium"
               >
                 ← Back to All Services
               </a>
 
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedService.name}</h2>
+                  <h2 className="text-2xl font-bold text-dark-text">{selectedService.name}</h2>
                   {selectedService.url && (
-                    <p className="text-gray-600 text-sm mt-1 break-all">{selectedService.url}</p>
+                    <p className="text-dark-muted text-sm mt-1 break-all">{selectedService.url}</p>
                   )}
                   {selectedService.ip_address && (
-                    <p className="text-gray-600 text-sm mt-1">IP: {selectedService.ip_address}</p>
+                    <p className="text-dark-muted text-sm mt-1">IP: {selectedService.ip_address}</p>
                   )}
                 </div>
                 <StatusBadge status={selectedService.status} size="lg" />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gray-50 rounded p-4">
-                  <div className="text-sm text-gray-600">Type</div>
-                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                <div className="bg-dark-bg border border-dark-border rounded p-4">
+                  <div className="text-sm text-dark-muted">Type</div>
+                  <div className="text-lg font-semibold text-dark-text mt-1">
                     {selectedService.type === 'website' ? 'Web Service' : 'Device'}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded p-4">
-                  <div className="text-sm text-gray-600">Protocol</div>
-                  <div className="text-lg font-semibold text-gray-900 mt-1 uppercase">
+                <div className="bg-dark-bg border border-dark-border rounded p-4">
+                  <div className="text-sm text-dark-muted">Protocol</div>
+                  <div className="text-lg font-semibold text-dark-text mt-1 uppercase">
                     {selectedService.protocol}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded p-4">
-                  <div className="text-sm text-gray-600">Uptime</div>
-                  <div className="text-lg font-semibold text-green-600 mt-1">
+                <div className="bg-dark-bg border border-dark-border rounded p-4">
+                  <div className="text-sm text-dark-muted">Uptime</div>
+                  <div className="text-lg font-semibold text-[#50b83c] mt-1">
                     {selectedService.uptime_percentage.toFixed(2)}%
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded p-4">
-                  <div className="text-sm text-gray-600">Avg Response</div>
-                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                <div className="bg-dark-bg border border-dark-border rounded p-4">
+                  <div className="text-sm text-dark-muted">Avg Response</div>
+                  <div className="text-lg font-semibold text-dark-text mt-1">
                     {selectedService.avg_response_time ? `${selectedService.avg_response_time.toFixed(0)}ms` : 'N/A'}
                   </div>
                 </div>
               </div>
 
               {selectedService.last_check && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-dark-muted">
                   Last checked: {new Date(selectedService.last_check).toLocaleString()}
                 </div>
               )}
             </div>
           </div>
         ) : (
-          // List view for all services
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <a
-                key={service.service_id}
-                href={`/public?service_id=${service.service_id}`}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {service.type === 'website' ? '🌐 Web Service' : '🖥️ Device'}
-                    </p>
+          // List view for all services - Uptime Kuma single column style
+          <div className="bg-dark-card border border-dark-border rounded-md shadow-sm overflow-hidden mb-8">
+            <div className="bg-dark-bg border-b border-dark-border px-6 py-3 font-semibold text-dark-text">
+              Services
+            </div>
+            <div className="divide-y divide-dark-border">
+              {services.map((service) => (
+                <a
+                  key={service.service_id}
+                  href={`/public/${username}?service_id=${service.service_id}`}
+                  className="px-6 py-4 flex items-center justify-between hover:bg-dark-bg transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center gap-4">
+                     <span className={`w-3 h-3 rounded-full ${service.status === 'UP' ? 'bg-[#50b83c]' : service.status === 'DOWN' ? 'bg-[#e74c3c]' : 'bg-gray-400'}`}></span>
+                     <span className="font-medium text-dark-text group-hover:text-[#3498db] transition-colors">{service.name}</span>
                   </div>
-                  <StatusBadge status={service.status} />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Uptime</span>
-                    <span className="font-semibold text-gray-900">
-                      {service.uptime_percentage.toFixed(2)}%
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Avg Response</span>
-                    <span className="font-semibold text-gray-900">
-                      {service.avg_response_time ? `${service.avg_response_time.toFixed(0)}ms` : 'N/A'}
-                    </span>
-                  </div>
-
-                  {service.last_check && (
-                    <div className="text-xs text-gray-500 pt-2 border-t border-gray-200">
-                      Updated {new Date(service.last_check).toLocaleTimeString()}
+                  
+                  <div className="flex items-center gap-8">
+                    <div className="hidden sm:block text-right">
+                      <div className="text-xs text-dark-muted uppercase tracking-wide">Uptime</div>
+                      <div className="text-sm font-semibold text-dark-text">{service.uptime_percentage.toFixed(2)}%</div>
                     </div>
-                  )}
-                </div>
-              </a>
-            ))}
+                    
+                    <div className="w-24 text-center">
+                       {service.status === 'UP' ? (
+                          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold text-[#50b83c] bg-[#50b83c]/10 border border-[#50b83c]/20">
+                            Up
+                          </span>
+                       ) : service.status === 'DOWN' ? (
+                          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold text-[#e74c3c] bg-[#e74c3c]/10 border border-[#e74c3c]/20">
+                            Down
+                          </span>
+                       ) : (
+                          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold text-dark-muted bg-dark-bg border border-dark-border">
+                            Unknown
+                          </span>
+                       )}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
         )}
 
         {services.length === 0 && (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
+          <div className="bg-dark-card border border-dark-border rounded-lg shadow-sm p-12 text-center">
             <div className="text-4xl mb-4">📭</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Services Available</h3>
-            <p className="text-gray-600">
+            <h3 className="text-lg font-semibold text-dark-text mb-2">No Services Available</h3>
+            <p className="text-dark-muted">
               There are no public services available to display at this time.
             </p>
           </div>
@@ -225,9 +233,8 @@ export default function PublicStatus() {
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-900 text-gray-400 py-8 text-center text-sm">
-        <p>DragonPing Uptime Monitoring System</p>
-        <p className="mt-2">Status updates every 30 seconds</p>
+      <div className="mt-auto py-8 text-center text-sm text-dark-muted border-t border-dark-border mt-12 bg-dark-card">
+        <p>Powered by <a href="/" className="text-[#3498db] hover:text-[#2980b9] transition-colors font-medium">DragonPing</a></p>
       </div>
     </div>
   );
