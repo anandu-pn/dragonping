@@ -1,6 +1,7 @@
 """Public API routes for service status monitoring without authentication."""
 
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -41,7 +42,7 @@ def get_public_services_status(username: str, service_id: int = None, db: Sessio
         # Get specific service if provided and it's public AND belongs to user
         service = db.query(Service).filter(
             Service.id == service_id,
-            Service.is_public == True,
+            Service.is_public,
             Service.user_id == user.id
         ).first()
 
@@ -59,7 +60,7 @@ def get_public_services_status(username: str, service_id: int = None, db: Sessio
     else:
         # Get all public services for this user
         public_services = db.query(Service).filter(
-            Service.is_public == True,
+            Service.is_public,
             Service.user_id == user.id
         ).all()
 
@@ -94,7 +95,7 @@ def public_health_check(db: Session = Depends(get_db)):
     Returns:
         Status information
     """
-    public_services_count = db.query(Service).filter(Service.is_public == True).count()
+    public_services_count = db.query(Service).filter(Service.is_public).count()
 
     return {
         "status": "healthy",

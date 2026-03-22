@@ -1,13 +1,14 @@
 """Email alerting service for service/device status changes."""
 
-import logging
 import asyncio
-from typing import List, Optional
+import logging
 from datetime import datetime, timezone
-from os import getenv
-import aiosmtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from os import getenv
+from typing import List, Optional
+
+import aiosmtplib
 
 logger = logging.getLogger(__name__)
 

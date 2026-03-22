@@ -1,14 +1,15 @@
 """API routes for service management."""
 
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.auth import get_current_user
 from app.db import get_db
 from app.models import Service
-from app.schemas import ServiceCreate, ServiceUpdate, ServiceResponse, UserResponse
+from app.schemas import ServiceCreate, ServiceResponse, ServiceUpdate, UserResponse
 from app.services.monitoring_service import MonitoringService
-from app.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +106,7 @@ def list_services(
         query = query.filter(Service.user_id == current_user.id)
 
     if active_only:
-        query = query.filter(Service.active == True)
+        query = query.filter(Service.active)
 
     services = query.offset(skip).limit(limit).all()
 

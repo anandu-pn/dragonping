@@ -1,10 +1,11 @@
 """Website uptime monitoring engine using httpx, ICMP ping, and TCP socket checks."""
 
-import httpx
+import logging
 import socket
 import time
-import logging
 from typing import Optional
+
+import httpx
 from pythonping import ping as icmp_ping
 
 logger = logging.getLogger(__name__)
@@ -186,7 +187,7 @@ def check_tcp_port(ip_address: str, port: int, timeout: int = TIMEOUT) -> dict:
                     "status": "DOWN",
                     "status_code": None,
                     "response_time": response_time,
-                    "error_message": f"TCP connection refused",
+                    "error_message": "TCP connection refused",
                 }
 
     except socket.timeout:

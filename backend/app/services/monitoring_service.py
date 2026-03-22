@@ -2,12 +2,13 @@
 
 import logging
 from datetime import datetime, timezone
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
 
-from app.models import Service, Check, User, AlertLog
-from app.monitor import check_service
+from sqlalchemy import desc
+from sqlalchemy.orm import Session
+
 from app.alerts import send_alerts
+from app.models import AlertLog, Check, Service, User
+from app.monitor import check_service
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class MonitoringService:
         Returns:
             Dictionary with results summary
         """
-        active_services = db.query(Service).filter(Service.active == True).all()
+        active_services = db.query(Service).filter(Service.active).all()
 
         if not active_services:
             logger.info("No active services to monitor")
@@ -94,7 +95,7 @@ class MonitoringService:
 
                         if not already_alerted:
                             # Get admin recipient emails
-                            admins = db.query(User).filter(User.is_admin == True).all()
+                            admins = db.query(User).filter(User.is_admin).all()
                             recipients = [a.email for a in admins if a.email]
 
                             # Fire alert emails asynchronously

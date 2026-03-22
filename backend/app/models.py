@@ -1,10 +1,23 @@
 """SQLAlchemy models for DragonPing monitoring system."""
 
-from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Float, Boolean, ForeignKey, Index, Enum
-from sqlalchemy.orm import relationship
-from app.db import Base
 import enum
+from datetime import datetime, timezone
+
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import relationship
+
+from app.db import Base
 
 
 class ServiceType(str, enum.Enum):

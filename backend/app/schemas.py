@@ -1,9 +1,9 @@
 """Pydantic schemas for API requests and responses."""
 
 from datetime import datetime
-from pydantic import BaseModel, HttpUrl, Field, EmailStr
 from typing import List, Optional
 
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 # ==================== Authentication Schemas ====================
 

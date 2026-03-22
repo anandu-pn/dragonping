@@ -1,17 +1,18 @@
 """Background scheduler using APScheduler."""
 
-import logging
 import asyncio
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
+import logging
 from os import getenv
 
-from app.db import SessionLocal
-from app.models import Check, Service, AlertLog
-from app.services.monitoring_service import MonitoringService
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy import desc
+from sqlalchemy.orm import Session
+
 from app.alerts import send_alerts
+from app.db import SessionLocal
+from app.models import AlertLog, Check, Service
+from app.services.monitoring_service import MonitoringService
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ async def process_alerts(db: Session):
 
                 # Send alerts
                 if recipients:
-                    sent_count = await send_alerts(
+                    await send_alerts(
                         service_name=service.name,
                         status=current_status,
                         service_id=service.id,

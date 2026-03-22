@@ -11,10 +11,18 @@ Results are stored as ServicePrediction rows and optionally trigger alerts.
 import logging
 import time
 from datetime import datetime, timezone
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
 
-from app.models import Service, Check, AlertLog, RegisteredAgent, AgentMetric, ServicePrediction
+from sqlalchemy import desc
+from sqlalchemy.orm import Session
+
+from app.models import (
+    AgentMetric,
+    AlertLog,
+    Check,
+    RegisteredAgent,
+    Service,
+    ServicePrediction,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -303,8 +311,6 @@ def check_isolation_forest(features: dict, model_cache: dict, service_id: int, d
             return (False, "")  # Not enough data to train
 
         checks = list(reversed(checks))
-        response_times = [c.response_time if c.response_time is not None else 0.0 for c in checks]
-        statuses = [c.status for c in checks]
 
         # Build training matrix using sliding windows of 10
         training_vectors = []
@@ -380,7 +386,7 @@ def run_predictions(db: Session):
     """
     logger.info("Running prediction engine...")
 
-    services = db.query(Service).filter(Service.active == True).all()
+    services = db.query(Service).filter(Service.active).all()
     processed = 0
     flagged = 0
 

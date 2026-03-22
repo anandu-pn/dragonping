@@ -1,20 +1,20 @@
 """Agent registration and telemetry endpoints."""
 
-import logging
 import json
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import jwt
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from sqlalchemy.orm import Session
 
+from app.auth import JWT_ALGORITHM, JWT_SECRET_KEY, get_current_user, verify_password
 from app.db import get_db
-from app.models import User, RegisteredAgent, AgentMetric
-from app.auth import verify_password, get_current_user, JWT_SECRET_KEY, JWT_ALGORITHM
+from app.models import AgentMetric, RegisteredAgent, User
 from app.schemas import UserResponse
 
 logger = logging.getLogger(__name__)

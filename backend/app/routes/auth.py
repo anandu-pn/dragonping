@@ -1,14 +1,15 @@
 """Authentication endpoints for user registration and login."""
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.auth import create_access_token, hash_password, verify_password
 from app.db import get_db
 from app.models import User
-from app.schemas import UserCreate, UserLogin, TokenResponse
-from app.auth import hash_password, verify_password, create_access_token
+from app.schemas import TokenResponse, UserCreate, UserLogin
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
         return TokenResponse(access_token=access_token, token_type="bearer")
 
+    except HTTPException:
+        raise
     except IntegrityError:
         db.rollback()
         raise HTTPException(

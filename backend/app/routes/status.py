@@ -1,14 +1,15 @@
 """API routes for monitoring status and history."""
 
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.auth import get_current_user
 from app.db import get_db
-from app.models import Service, Check
+from app.models import Check, Service
 from app.schemas import CheckResponse, ServiceStats, UserResponse
 from app.services.monitoring_service import MonitoringService
-from app.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 

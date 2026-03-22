@@ -1,12 +1,13 @@
 """Prediction API endpoints for predictive downtime detection."""
 
 from typing import List
+
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
+from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import ServicePrediction, Service
+from app.models import Service, ServicePrediction
 
 router = APIRouter(prefix="/api/predictions", tags=["predictions"])
 

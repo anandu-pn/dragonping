@@ -1,14 +1,15 @@
 """FastAPI main application setup."""
 
 import logging
+import os
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.db import init_db
-from app.scheduler import start_scheduler, stop_scheduler
-from app.routes import services, status, auth, public_status, alerts, agent, predictions
+from app.routes import agent, alerts, auth, predictions, public_status, services, status
 
 # Configure logging
 logging.basicConfig(
@@ -31,14 +32,20 @@ async def lifespan(app: FastAPI):
     logger.info("Starting DragonPing application...")
     init_db()
     logger.info("Database initialized")
-    start_scheduler()
-    logger.info("Background scheduler started")
+
+    if os.getenv("ENVIRONMENT") != "test":
+        from app.scheduler import start_scheduler, stop_scheduler
+        start_scheduler()
+        logger.info("Background scheduler started")
+
     yield
 
     # Shutdown
     logger.info("Shutting down DragonPing application...")
-    stop_scheduler()
-    logger.info("Background scheduler stopped")
+    if os.getenv("ENVIRONMENT") != "test":
+        from app.scheduler import stop_scheduler
+        stop_scheduler()
+        logger.info("Background scheduler stopped")
 
 
 # Initialize FastAPI application
@@ -68,7 +75,6 @@ app.include_router(agent.router)
 app.include_router(predictions.router)
 
 # Serve static files (e.g. dragonping-agent.sh)
-import os
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 # Create static directoy if it doesn't exist
 os.makedirs(static_dir, exist_ok=True)
@@ -88,7 +94,7 @@ def read_root():
 @app.get("/health", tags=["health"])
 def health_check():
     """Health check endpoint."""
-    return {"status": "healthy"}
+    return {"status": "ok", "version": "1.0.0"}
 
 
 if __name__ == "__main__":

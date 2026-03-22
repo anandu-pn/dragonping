@@ -2,10 +2,11 @@
 
 import logging
 from datetime import datetime, timedelta, timezone
+from os import getenv
 from typing import Optional
 
 import jwt
-from bcrypt import hashpw, gensalt, checkpw
+from bcrypt import checkpw, gensalt, hashpw
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
@@ -13,7 +14,6 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import User
 from app.schemas import UserResponse
-from os import getenv
 
 logger = logging.getLogger(__name__)
 
