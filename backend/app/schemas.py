@@ -79,6 +79,8 @@ class ServiceUpdate(BaseModel):
     is_public: Optional[bool] = None
     interval: Optional[int] = None
     active: Optional[bool] = None
+    sla_uptime_target: Optional[float] = None
+    sla_response_target: Optional[float] = None
 
 
 class ServiceResponse(ServiceBase):
@@ -100,8 +102,9 @@ class CheckResponse(BaseModel):
     id: int
     service_id: int
     status: str  # "UP" or "DOWN"
-    status_code: Optional[int]
-    response_time: Optional[float]  # milliseconds
+    status_code: Optional[int] = None
+    response_time: Optional[float] = None # milliseconds
+    cert_expiry_days: Optional[int] = None
     error_message: Optional[str]
     checked_at: datetime
 
@@ -124,12 +127,14 @@ class ServiceStats(BaseModel):
     type: str
     protocol: str
     status: str  # Current status
+    cert_expiry_days: Optional[int] = None
     uptime_percentage: float  # Percentage of successful checks
     avg_response_time: Optional[float]  # Average response time in ms
     last_check: Optional[datetime]
     last_check_response_time: Optional[float]
     total_checks: int
     failed_checks: int
+    sla: Optional[dict] = None
 
 
 class AlertLogResponse(BaseModel):

@@ -145,6 +145,15 @@ function ServiceCard({ service, onDelete, onClick, isSelected, prediction }) {
                 DOWN
               </span>
             )}
+            
+            {service.cert_expiry_days != null && (
+              <div className={`mt-1.5 text-[10px] font-medium whitespace-nowrap ${
+                service.cert_expiry_days > 30 ? 'text-[#50b83c]' : 
+                service.cert_expiry_days >= 15 ? 'text-[#f39c12]' : 'text-[#e74c3c]'
+              }`}>
+                SSL: {service.cert_expiry_days}d
+              </div>
+            )}
           </div>
 
           <button

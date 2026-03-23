@@ -193,6 +193,12 @@ def update_service(
         service.interval = service_update.interval
     if service_update.active is not None:
         service.active = service_update.active
+    
+    update_data = service_update.model_dump(exclude_unset=True)
+    if "sla_uptime_target" in update_data:
+        service.sla_uptime_target = update_data["sla_uptime_target"]
+    if "sla_response_target" in update_data:
+        service.sla_response_target = update_data["sla_response_target"]
 
     db.commit()
     db.refresh(service)

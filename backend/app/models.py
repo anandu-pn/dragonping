@@ -52,6 +52,11 @@ class Service(Base):
     is_public = Column(Boolean, default=False, nullable=False)  # Visible on public dashboard
     interval = Column(Integer, default=30, nullable=False)  # Check interval in seconds
     active = Column(Boolean, default=True, nullable=False)
+    
+    # SLA Targets
+    sla_uptime_target = Column(Float, nullable=True, default=None)
+    sla_response_target = Column(Float, nullable=True, default=None)
+    
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
@@ -74,6 +79,7 @@ class Check(Base):
     status = Column(String(10), nullable=False)  # "UP" or "DOWN"
     status_code = Column(Integer, nullable=True)  # HTTP status code
     response_time = Column(Float, nullable=True)  # Response time in milliseconds
+    cert_expiry_days = Column(Integer, nullable=True)  # Days until SSL cert expires
     error_message = Column(String(1024), nullable=True)  # Error details if failed
     checked_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
 

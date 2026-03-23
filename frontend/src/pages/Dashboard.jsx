@@ -302,6 +302,18 @@ function Dashboard() {
 
                 {/* Risk Level */}
                 <div className="space-y-3">
+                  {services.find(s => s.id === selectedServiceId)?.cert_expiry_days != null && (
+                    <div className="flex items-center justify-between pb-2 border-b border-[#21262d]">
+                      <span className="text-xs text-[#8b949e] uppercase tracking-wider font-semibold">SSL cert expires</span>
+                      <span className={`text-sm font-bold ${
+                        services.find(s => s.id === selectedServiceId).cert_expiry_days > 30 ? 'text-[#50b83c]' : 
+                        services.find(s => s.id === selectedServiceId).cert_expiry_days >= 15 ? 'text-[#f39c12]' : 'text-[#e74c3c]'
+                      }`}>
+                        {services.find(s => s.id === selectedServiceId).cert_expiry_days} days
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-[#8b949e] uppercase tracking-wider font-semibold">Risk Level</span>
                     <span className={`text-sm font-bold uppercase ${

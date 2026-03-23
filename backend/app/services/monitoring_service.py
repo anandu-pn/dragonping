@@ -1,7 +1,10 @@
 """Monitoring service layer with business logic."""
 
 import logging
+import socket
+import ssl
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -11,6 +14,23 @@ from app.models import AlertLog, Check, Service, User
 from app.monitor import check_service
 
 logger = logging.getLogger(__name__)
+
+def check_cert_expiry(hostname: str) -> dict:
+    try:
+        ctx = ssl.create_default_context()
+        with ctx.wrap_socket(
+            socket.socket(), server_hostname=hostname
+        ) as s:
+            s.settimeout(5)
+            s.connect((hostname, 443))
+            cert = s.getpeercert()
+            expiry = datetime.strptime(
+                cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
+            days_left = (expiry - datetime.utcnow()).days
+            return {"days_left": days_left, "error": None}
+    except Exception as e:
+        return {"days_left": None, "error": str(e)}
+
 
 
 class MonitoringService:
@@ -48,11 +68,51 @@ class MonitoringService:
                     port=service.port,
                 )
 
+                cert_expiry_days = None
+                if service.protocol == "https" and service.url:
+                    parsed = urlparse(service.url)
+                    hostname = parsed.hostname
+                    if hostname:
+                        cert_info = check_cert_expiry(hostname)
+                        cert_expiry_days = cert_info.get("days_left")
+
+                        if cert_expiry_days is not None and cert_expiry_days < 30:
+                            last_cert_alert = (
+                                db.query(AlertLog)
+                                .filter(AlertLog.service_id == service.id, AlertLog.alert_type == "CERT_EXPIRY")
+                                .order_by(AlertLog.sent_at.desc())
+                                .first()
+                            )
+                            if not last_cert_alert or (datetime.now(timezone.utc) - last_cert_alert.sent_at).days >= 1:
+                                admins = db.query(User).filter(User.is_admin).all()
+                                recipients = [a.email for a in admins if a.email]
+                                reason = f"SSL certificate expires in {cert_expiry_days} days"
+                                try:
+                                    if recipients:
+                                        await send_alerts(
+                                            service_name=service.name,
+                                            status="CERT_EXPIRY",
+                                            service_id=service.id,
+                                            recipients=recipients,
+                                            error_message=reason,
+                                        )
+                                        for r in recipients:
+                                            alert_log = AlertLog(
+                                                service_id=service.id,
+                                                alert_type="CERT_EXPIRY",
+                                                recipient_email=r,
+                                            )
+                                            db.add(alert_log)
+                                        db.flush()
+                                except Exception as e:
+                                    logger.error(f"Error sending CERT_EXPIRY alerts for {service.id}: {e}")
+
                 check = Check(
                     service_id=service.id,
                     status=result["status"],
                     status_code=result["status_code"],
                     response_time=result["response_time"],
+                    cert_expiry_days=cert_expiry_days,
                     error_message=result["error_message"],
                     checked_at=datetime.now(timezone.utc),
                 )
@@ -159,6 +219,7 @@ class MonitoringService:
                 "type": service.type,
                 "protocol": service.protocol,
                 "status": "UNKNOWN",
+                "cert_expiry_days": None,
                 "uptime_percentage": 0,
                 "avg_response_time": None,
                 "last_check": None,
@@ -189,6 +250,7 @@ class MonitoringService:
             "type": service.type,
             "protocol": service.protocol,
             "status": current_status,
+            "cert_expiry_days": last_check.cert_expiry_days if last_check else None,
             "uptime_percentage": round(uptime_percentage, 2),
             "avg_response_time": round(avg_response_time, 2) if avg_response_time else None,
             "last_check": last_check.checked_at if last_check else None,

@@ -2,3 +2,208 @@ npm run dev
 
 
 .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+Read DRAGONPING_CONTEXT.md. Implement Telegram alert notifications as a minimal optional feature. Off by default. Wait for confirmation after each file.
+
+What it does
+When a service goes DOWN (or recovers UP), DragonPing sends a Telegram message to a configured chat in addition to email. If Telegram is not configured via env vars the feature does nothing — no errors, no logs, completely silent. Works alongside the existing email alert system, does not replace it.
+
+Step 1 — Environment variables
+Add to .env.example:
+env# ── Telegram Alerts (optional) ────────────────────────────
+# Set ENABLE_TELEGRAM=true and configure bot to enable
+# Create bot: message @BotFather on Telegram → /newbot
+# Get chat ID: message @userinfobot on Telegram
+ENABLE_TELEGRAM=false
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
+Add to app/config.py:
+pythonTELEGRAM_ENABLED   = feature_enabled("ENABLE_TELEGRAM")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
+
+Step 2 — Telegram sender
+Create app/telegram.py:
+pythonimport logging
+import aiohttp
+from app.config import (
+    TELEGRAM_ENABLED,
+    TELEGRAM_BOT_TOKEN,
+    TELEGRAM_CHAT_ID
+)
+
+logger = logging.getLogger(__name__)
+
+async def send_telegram(message: str) -> bool:
+    """
+    Send a Telegram message.
+    Returns True on success, False on any failure.
+    Completely silent if ENABLE_TELEGRAM=false.
+    """
+    if not TELEGRAM_ENABLED:
+        return False
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning(
+            "Telegram enabled but BOT_TOKEN or CHAT_ID missing"
+        )
+        return False
+
+    url = (f"https://api.telegram.org"
+           f"/bot{TELEGRAM_BOT_TOKEN}/sendMessage")
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "HTML"
+    }
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                url, json=payload, timeout=aiohttp.ClientTimeout(total=5)
+            ) as resp:
+                if resp.status == 200:
+                    logger.info("Telegram alert sent")
+                    return True
+                else:
+                    body = await resp.text()
+                    logger.error(
+                        f"Telegram send failed {resp.status}: {body}"
+                    )
+                    return False
+    except Exception as e:
+        logger.error(f"Telegram send exception: {e}")
+        return False
+
+
+def format_down_message(service_name: str,
+                         target: str,
+                         protocol: str) -> str:
+    return (
+        f"🔴 <b>DragonPing Alert</b>\n\n"
+        f"<b>Service DOWN</b>: {service_name}\n"
+        f"<b>Target</b>: {target}\n"
+        f"<b>Protocol</b>: {protocol.upper()}\n"
+        f"<b>Time</b>: {__import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
+
+def format_up_message(service_name: str,
+                       target: str,
+                       response_ms: float | None) -> str:
+    resp = f"{response_ms:.0f}ms" if response_ms else "—"
+    return (
+        f"🟢 <b>DragonPing Alert</b>\n\n"
+        f"<b>Service RECOVERED</b>: {service_name}\n"
+        f"<b>Target</b>: {target}\n"
+        f"<b>Response time</b>: {resp}\n"
+        f"<b>Time</b>: {__import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
+
+def format_cert_message(service_name: str,
+                         days_left: int) -> str:
+    emoji = "🔴" if days_left < 15 else "🟡"
+    return (
+        f"{emoji} <b>DragonPing Alert</b>\n\n"
+        f"<b>SSL Certificate Expiring</b>: {service_name}\n"
+        f"<b>Days remaining</b>: {days_left}\n"
+        f"<b>Action</b>: Renew certificate immediately"
+    )
+
+
+def format_prediction_message(service_name: str,
+                               reason: str) -> str:
+    return (
+        f"⚠️ <b>DragonPing Prediction</b>\n\n"
+        f"<b>Risk detected</b>: {service_name}\n"
+        f"<b>Reason</b>: {reason}\n"
+        f"<b>Action</b>: Check service before it goes down"
+    )
+Note: aiohttp should already be in requirements.txt because aiosmtplib depends on it. If not, add it.
+
+Step 3 — Wire into alerts
+In app/routes/alerts.py, wherever the email is sent after a DOWN or UP event is detected, add the Telegram call alongside it:
+pythonfrom app.telegram import (
+    send_telegram,
+    format_down_message,
+    format_up_message
+)
+
+# After the existing email send, add:
+await send_telegram(
+    format_down_message(
+        service.name,
+        service.url or service.ip_address,
+        service.protocol
+    )
+)
+Do the same for UP/recovery alerts using format_up_message.
+Also wire into app/predictor.py where high-risk predictions create alerts:
+pythonfrom app.telegram import send_telegram, format_prediction_message
+
+# When risk_level == "high":
+await send_telegram(
+    format_prediction_message(service.name, combined_reason)
+)
+And in the cert expiry check (from the previous cert expiry implementation):
+pythonfrom app.telegram import send_telegram, format_cert_message
+
+await send_telegram(format_cert_message(service.name, days_left))
+
+Step 4 — Test alert endpoint
+Add a test Telegram endpoint alongside the existing POST /api/alerts/test:
+POST /api/alerts/test-telegram
+Requires auth. Sends a test message:
+pythonfrom app.telegram import send_telegram
+
+@router.post("/test-telegram")
+async def test_telegram(current_user=Depends(get_current_user)):
+    if not TELEGRAM_ENABLED:
+        return {"status": "disabled",
+                "message": "Set ENABLE_TELEGRAM=true to enable"}
+    success = await send_telegram(
+        "✅ <b>DragonPing</b>\n\nTelegram alerts configured correctly!"
+    )
+    if success:
+        return {"status": "sent"}
+    return {"status": "failed",
+            "message": "Check TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID"}
+
+Step 5 — Add test
+Add to backend/tests/test_auth.py or a new test_telegram.py:
+pythonfrom unittest.mock import AsyncMock, patch
+
+def test_telegram_disabled_by_default(client, auth_headers):
+    # ENABLE_TELEGRAM is not set in test env
+    # test endpoint should return disabled status
+    r = client.post("/api/alerts/test-telegram",
+                    headers=auth_headers)
+    assert r.status_code == 200
+    assert r.json()["status"] == "disabled"
+
+def test_telegram_send_skips_when_disabled():
+    # Unit test — send_telegram returns False when disabled
+    import asyncio
+    from app.telegram import send_telegram
+    result = asyncio.run(send_telegram("test"))
+    assert result is False
+
+Step 6 — Update DRAGONPING_CONTEXT.md
+Add under Done:
+markdown- Telegram alerts (ENABLE_TELEGRAM=false by default)
+  Sends DOWN/UP/cert/prediction alerts to Telegram chat
+  Endpoints: POST /api/alerts/test-telegram
+  Config: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID in .env
+- SLA tracking (ENABLE_SLA=false by default)
+  Per-service uptime % and response time targets
+  Shown in service detail panel when configured
+  Fields: sla_uptime_target, sla_response_target on services
+
+Constraints
+
+ENABLE_TELEGRAM=false by default — if env var missing or false, send_telegram() returns False immediately, no HTTP calls, no errors, completely invisible
+Do not use any Telegram library — raw aiohttp POST only, keeps dependencies minimal
+Do not modify existing email logic — Telegram is additive, runs after email
+If Telegram send fails for any reason, log the error but do not raise an exception — never let Telegram failure break the alert flow
+Do not add npm packages to frontend — no UI changes needed, this is backend only
+aiohttp only — already available via existing dependencies
+Show me one file at a time, wait for confirmation

@@ -84,3 +84,13 @@ instance/
 *.bak
 *.tmp
 *.temp
+
+#
+Auction Report.pdf
+SREELAKSHMI_ANILKUMAR_REPORT.pdf
+Auction_report-1.docx
+
+# -------------------------
+# Report / Documentation artifacts
+# -------------------------
+report/
