@@ -1,0 +1,1922 @@
+%=============================================================
+% DragonPing -- MCA Project Report
+% College of Engineering Trivandrum
+% APJ Abdul Kalam Technological University
+%
+% FILL IN MANUALLY:
+%   \newcommand{\StudentName}   -- your full name
+%   \newcommand{\RegNumber}     -- your register number
+%   \newcommand{\GuideName}     -- guide name and designation
+%   \newcommand{\HODName}       -- head of department
+%   \newcommand{\PrincipalName} -- principal name
+%   \newcommand{\SubmissionMonth} -- e.g. May 2025
+%=============================================================
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+%-------------------------------------------------------------
+% PACKAGES
+%-------------------------------------------------------------
+\usepackage[
+  top=1in,
+  bottom=1in,
+  left=1.25in,
+  right=1in
+]{geometry}
+
+\usepackage{times}           % Times New Roman font
+\usepackage{setspace}        % Line spacing
+\usepackage{titlesec}        % Chapter/section heading styles
+\usepackage{fancyhdr}        % Header and footer
+\usepackage{graphicx}        % Images
+\usepackage{float}           % Figure placement [H]
+\usepackage{caption}         % Caption formatting
+\usepackage{tabularx}        % Better tables
+\usepackage{booktabs}        % Professional table lines
+\usepackage{longtable}       % Tables spanning multiple pages
+\usepackage{array}           % Extended column types
+\usepackage{multirow}        % Multirow cells
+\usepackage{hyperref}        % Clickable links and TOC
+\usepackage{url}             % URL formatting in bibliography
+\usepackage{listings}        % Code listings
+\usepackage{xcolor}          % Colors for code
+\usepackage{amsmath}         % Math equations
+\usepackage{amssymb}         % Math symbols
+\usepackage{enumitem}        % List customisation
+\usepackage{indentfirst}     % Indent first paragraph of each section
+\usepackage{parskip}         % Paragraph spacing
+\usepackage{tocloft}         % TOC/LOF/LOT formatting
+\usepackage{etoolbox}        % Patching commands
+\usepackage{emptypage}       % Suppress headers on empty pages
+\usepackage{tikz}            % Native diagrams
+\usepackage{pgfplots}        % Plots and charts
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc, backgrounds, shadows, decorations.markings}
+\usepackage[utf8]{inputenc}
+\setlength{\headheight}{13.6pt}
+\addtolength{\topmargin}{-1.6pt}
+\usepackage[T1]{fontenc}
+
+%-------------------------------------------------------------
+% STUDENT / PROJECT DETAILS  -- FILL THESE IN
+%-------------------------------------------------------------
+\newcommand{\ProjectTitle}{DragonPing: A Real-Time Network Monitoring
+  and Predictive Analytics Platform}
+\newcommand{\StudentName}{ANANDU P N}
+\newcommand{\RegNumber}{TVE24MCA-2013}
+\newcommand{\GuideName}{Dr.~Liji P I}
+\newcommand{\HODName}{Dr.~Liji P I}
+\newcommand{\PrincipalName}{Dr.~Suresh K}
+\newcommand{\DeptName}{Department of Computer Applications}
+\newcommand{\CollegeName}{College of Engineering Trivandrum}
+\newcommand{\CityName}{Thiruvananthapuram}
+\newcommand{\PinCode}{695016}
+\newcommand{\SubmissionMonth}{March 2026}
+\newcommand{\Degree}{Master of Computer Applications}
+\newcommand{\DegreeShort}{MCA}
+
+%-------------------------------------------------------------
+% PAGE GEOMETRY AND LINE SPACING
+%-------------------------------------------------------------
+\setstretch{1.5}             % 1.5 line spacing throughout
+\setlength{\parindent}{0.5in}
+\setlength{\parskip}{0pt}
+
+%-------------------------------------------------------------
+% HYPERREF SETUP
+%-------------------------------------------------------------
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = black,
+  citecolor  = black,
+  urlcolor   = black,
+  pdftitle   = {DragonPing MCA Project Report},
+  pdfauthor  = {\StudentName},
+}
+
+%-------------------------------------------------------------
+% CHAPTER AND SECTION HEADING STYLES
+% Matching CET format: Chapter heading centered, bold, all caps
+%-------------------------------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\large\bfseries\centering}
+  {\MakeUppercase{\chaptertitlename}\ \thechapter}
+  {10pt}
+  {\large\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-20pt}{30pt}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries}
+  {\thesection}
+  {1em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}
+  {1em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}
+  {1em}{}
+
+%-------------------------------------------------------------
+% HEADER AND FOOTER
+% Header: horizontal rule only, no text
+% Footer: rule + "College of Engineering Trivandrum" + page number
+% plain MUST match fancy -- LaTeX forces plain on every \chapter page
+% frontmatter: completely empty, used for all pre-Chapter-1 pages
+%-------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{}
+\fancyfoot[L]{\small College of Engineering Trivandrum}
+\fancyfoot[R]{\thepage}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[C]{}%
+  \fancyfoot[L]{\small College of Engineering Trivandrum}%
+  \fancyfoot[R]{\thepage}%
+  \fancyfoot[C]{}%
+  \renewcommand{\headrulewidth}{0.4pt}%
+  \renewcommand{\footrulewidth}{0.4pt}%
+}
+
+\fancypagestyle{frontmatter}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+
+%-------------------------------------------------------------
+% FIGURE AND TABLE CAPTION STYLES
+% Centered, bold label, matching CET format
+%-------------------------------------------------------------
+\captionsetup[figure]{
+  labelfont = bf,
+  textfont  = bf,
+  justification = centering,
+  labelsep  = colon,
+  position  = below,
+}
+\captionsetup[table]{
+  labelfont = bf,
+  textfont  = bf,
+  justification = centering,
+  labelsep  = colon,
+  position  = below,
+}
+
+% Figure numbering: chapter.figure (e.g. Figure 5.1)
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+
+%-------------------------------------------------------------
+% TABLE OF CONTENTS FORMATTING
+%-------------------------------------------------------------
+\renewcommand{\contentsname}{CONTENTS}
+\renewcommand{\listfigurename}{LIST OF FIGURES}
+\renewcommand{\listtablename}{LIST OF TABLES}
+
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{12pt}
+\renewcommand{\cfttoctitlefont}{\large\bfseries\centering\MakeUppercase}
+\renewcommand{\cftloftitlefont}{\large\bfseries\centering\MakeUppercase}
+\renewcommand{\cftlottitlefont}{\large\bfseries\centering\MakeUppercase}
+
+\setlength{\cftbeforechapskip}{6pt}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+
+%-------------------------------------------------------------
+% CODE LISTING STYLE
+%-------------------------------------------------------------
+\lstdefinestyle{dragonping}{
+  backgroundcolor   = \color{gray!8},
+  basicstyle        = \footnotesize\ttfamily,
+  breakatwhitespace = false,
+  breaklines        = true,
+  captionpos        = b,
+  commentstyle      = \color{gray},
+  frame             = single,
+  framesep          = 3pt,
+  keepspaces        = true,
+  keywordstyle      = \color{blue}\bfseries,
+  numbers           = left,
+  numbersep         = 8pt,
+  numberstyle       = \tiny\color{gray},
+  rulecolor         = \color{gray!40},
+  showstringspaces  = false,
+  stringstyle       = \color{teal},
+  tabsize           = 4,
+  xleftmargin       = 15pt,
+}
+\lstset{style=dragonping}
+
+%-------------------------------------------------------------
+% BIBLIOGRAPHY STYLE
+%-------------------------------------------------------------
+\bibliographystyle{unsrt}    % numbered in citation order [1],[2]...
+
+%=============================================================
+% DOCUMENT BEGIN
+%=============================================================
+\begin{document}
+
+%-------------------------------------------------------------
+% FRONT MATTER -- Roman page numbering
+%-------------------------------------------------------------
+\pagenumbering{roman}
+\pagestyle{frontmatter}
+% Redefine 'plain' to be empty during front matter so \chapter* pages
+% (Declaration, Certificate, etc.) do not show footer or page numbers.
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+
+%-------- TITLE PAGE --------
+\begin{titlepage}
+\begin{center}
+
+\vspace*{0.3cm}
+{\large\bfseries\MakeUppercase{DragonPing: A Real-Time Network Monitoring\\
+  and Predictive Analytics Platform}}
+
+\vspace{1.2cm}
+{\normalsize A PROJECT REPORT}
+
+\vspace{0.5cm}
+{\normalsize submitted by}
+
+\vspace{0.5cm}
+{\large\bfseries \StudentName}\\[4pt]
+{\large\bfseries \RegNumber}
+
+\vspace{0.7cm}
+{\normalsize To}
+
+\vspace{0.3cm}
+{\normalsize The APJ Abdul Kalam Technological University}\\
+{\normalsize in partial fulfillment of the requirements for the award of the Degree}\\[4pt]
+{\normalsize of}\\[4pt]
+{\large\bfseries \Degree}
+
+\vspace{0.8cm}
+% College logo -- place logo.png in the same folder as this .tex file
+% Replace with your actual logo file
+\includegraphics[width=3cm]{cet_logo.png}
+
+\vspace{0.8cm}
+{\large\bfseries \DeptName}\\[4pt]
+{\normalsize \CollegeName}\\
+{\normalsize \CityName}\\
+
+{\normalsize \SubmissionMonth}
+
+\end{center}
+\end{titlepage}
+
+%-------- DECLARATION --------
+% Fill this page manually -- leave as-is
+\newpage
+\chapter*{DECLARATION}
+\noindent I undersigned hereby declare that the project report titled
+``\textbf{\ProjectTitle}'' submitted for partial fulfillment of the
+requirements for the award of the degree of \Degree\ of the APJ Abdul
+Kalam Technological University, Kerala is a Bonafide work done by me
+under the supervision of \GuideName , Head of the 
+Department. This submission represents my ideas
+in my own words and where ideas or words of others have been included, I
+have adequately and accurately cited and referenced the sources. I also
+declare that I have adhered to the ethics of academic honesty and
+integrity as directed in the ethics policy of the college and have not
+misrepresented or fabricated any data or idea or fact or source in my
+submission. I understand that any violation of the above will be a cause
+for disciplinary action by the Institute and/or University and can also
+evoke penal action from the sources which have thus not been properly
+cited or from whom proper permission has not been obtained. This report
+has not previously formed the basis for the award of any degree, diploma,
+or similar title.
+
+\vspace{2cm}
+\noindent Place: Trivandrum \hfill {\hspace{4.5cm}}\\[2pt]
+\noindent Date: {\hspace{3cm}} \hfill \StudentName
+
+%-------- CERTIFICATE --------
+\newpage
+\chapter*{CERTIFICATE}
+\begin{center}
+{\large\bfseries \CollegeName}\\[6pt]
+{\large\bfseries \CityName}\\[6pt]
+{\large\bfseries \PinCode}\\[12pt]
+\includegraphics[width=2.5cm]{logo.png}\\[12pt]
+{\large\bfseries CERTIFICATE}
+\end{center}
+
+\vspace{0.5cm}
+\noindent This is to certify that the report entitled
+\textbf{\MakeUppercase{\ProjectTitle}} submitted by
+\textbf{\StudentName} (\RegNumber) in partial fulfillment of the
+requirements for the award of the Degree of \Degree\ of the APJ Abdul
+Kalam Technological University during the year 2026.
+
+\vspace{3cm}
+\noindent\underline{\hspace{5.5cm}} \hfill \underline{\hspace{5.5cm}}\\[4pt]
+\noindent Internal Supervisor \hfill External Examiner
+
+\vspace{3cm}
+\noindent\underline{\hspace{5.5cm}}\\[4pt]
+\noindent Head of the Department
+
+%-------- ACKNOWLEDGEMENT --------
+\newpage
+\chapter*{ACKNOWLEDGEMENT}
+\noindent First and foremost I thank GOD almighty and my parents for the
+success of this project. I owe sincere gratitude and heartfelt thanks to
+everyone who shared their precious time and knowledge for the successful
+completion of my project.
+
+\noindent I am extremely thankful to \textbf{\PrincipalName}, Principal,
+\CollegeName, for providing me with the best facilities and atmosphere
+which was necessary for the successful completion of this project.
+
+\noindent I am extremely grateful to \textbf{\HODName}, Head of the Department,
+\DeptName, for providing me with the best facilities and atmosphere for
+creative work, guidance and encouragement.
+
+\noindent I express my sincere thanks to \textbf{\GuideName},
+\DeptName, \CollegeName, for valuable guidance, support, and advice that
+aided in the successful completion of my project.
+
+\noindent I profusely thank the other Professors in the
+department and all other staff of CET, for their guidance and inspiration
+throughout my course of study. I owe my thanks to my friends and all
+others who have directly or indirectly helped me in the successful
+completion of this project. No words can express my humble gratitude to
+my beloved parents and relatives who have been guiding me in all walks of
+my journey.
+
+\vspace{1.5cm}
+\begin{flushright}
+\StudentName
+\end{flushright}
+
+%-------- TABLE OF CONTENTS --------
+\newpage
+\tableofcontents
+
+%-------- LIST OF FIGURES --------
+\newpage
+\listoffigures
+
+%-------- LIST OF TABLES --------
+\newpage
+\listoftables
+
+%-------- ABSTRACT --------
+\newpage
+\addcontentsline{toc}{chapter}{Abstract}
+\chapter*{ABSTRACT}
+
+% FILL THIS IN -- 200 to 250 words
+DragonPing is a full-stack real-time monitoring and alerting
+platform designed for small and medium-scale deployments, with a
+particular focus on local network infrastructure such as college
+laboratory environments. The system continuously monitors the health and
+performance of websites, network devices, and embedded hardware using
+HTTP, HTTPS, ICMP, and TCP protocols. A lightweight shell-based agent
+enables resource monitoring of individual machines, collecting CPU, RAM,
+disk, and network utilisation metrics and pushing them to a central
+backend server.
+
+\noindent The platform implements a hybrid predictive anomaly detection
+engine combining rule-based threshold analysis, Exponentially Weighted
+Moving Average (EWMA) statistical process control, and an unsupervised
+Isolation Forest machine learning model trained incrementally on
+per-service monitoring history. This three-method voting system provides
+risk assessment before service failures occur, enabling proactive
+alerting through email and Telegram notification channels.
+
+\noindent As an architectural extension, the system demonstrates
+applicability to automotive embedded systems monitoring. Using an ESP32
+microcontroller as a hardware proxy for a vehicle ECU, the platform
+captures engine telemetry, battery voltage, and diagnostic trouble codes,
+presenting them through a dedicated vehicle HMI dashboard. This
+proof-of-concept illustrates the relevance of the DragonPing architecture
+to Software Defined Vehicle platforms.
+
+\noindent The system is containerised using Docker, with a CI/CD pipeline
+implemented through GitHub Actions for automated testing and deployment.
+The backend is built with FastAPI and SQLAlchemy, and the frontend with
+React and Tailwind CSS.
+
+%-------- BLANK PAGE BEFORE CHAPTER 1 --------
+\newpage
+\mbox{}
+\newpage
+
+%=============================================================
+% MAIN MATTER -- Arabic page numbering from Chapter 1
+%=============================================================
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{}
+\fancyfoot[L]{\small College of Engineering Trivandrum}
+\fancyfoot[R]{\thepage}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+% Restore 'plain' page style for chapter opening pages in main matter
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[C]{}%
+  \fancyfoot[L]{\small College of Engineering Trivandrum}%
+  \fancyfoot[R]{\thepage}%
+  \fancyfoot[C]{}%
+  \renewcommand{\headrulewidth}{0.4pt}%
+  \renewcommand{\footrulewidth}{0.4pt}%
+}
+
+%=============================================================
+% CHAPTER 1: INTRODUCTION
+%=============================================================
+\chapter{INTRODUCTION}
+
+\section{Project Description}
+The development of DragonPing originated from the critical need to maintain high availability and operational reliability in modern IT infrastructures. In today's highly interconnected digital landscape, network environments frequently face the challenge of system degradation and unexpected downtimes, which can severely disrupt services and impact productivity. Traditional monitoring solutions often operate on a purely reactive paradigm, notifying administrators only after a critical failure has already occurred. DragonPing was conceptualised to address this vulnerability by delivering a production-aligned, proactive monitoring and predictive analytics platform. Rather than serving as a single-purpose application, it integrates cross-domain technologies to continuously track system health, forecast potential outages, and dispatch real-time alerts, thereby empowering administrators to prevent downtime before it impacts end users.
+
+\noindent DragonPing is a hybrid smart monitoring and predictive analytics platform designed to provide real-time visibility into the health of web services, network infrastructure, and embedded hardware. Initially, the system was envisioned as a standard uptime monitoring tool for websites. However, recognising that existing market solutions already saturate this space, the project was expanded to incorporate deep network-level monitoring. This includes tracking local devices such as routers, workstations, and printers using ICMP and TCP protocols, thereby adding a practical dimension suitable for small to medium-scale environments like university laboratories.
+
+\noindent Moving beyond reactive fault detection, the system integrates a predictive analytics engine. Rather than simply alerting administrators after a failure has occurred, DragonPing employs a hybrid approach combining statistical process control, specifically Exponentially Weighted Moving Average (EWMA), and an unsupervised machine learning model (Isolation Forest). This allows the system to identify anomalous performance patterns and latency degradation proactively. 
+
+\noindent To further distinguish the platform and demonstrate its architectural scalability, the project extends into the domain of Software Defined Vehicles (SDV). Modern vehicles rely on complex networks of Electronic Control Units (ECUs). DragonPing incorporates a proof-of-concept automotive module using an ESP32 microcontroller as an ECU simulator. This embedded device transmits telemetry data to the central monitoring backend, proving that the system's core architecture can seamlessly adapt to automotive and IoT environments. 
+
+\noindent Finally, the project heavily emphasises modern software engineering and deployment practices. The entire application stack---comprising a FastAPI backend, a React frontend, and a relational database---is containerised using Docker. Furthermore, a Continuous Integration and Continuous Deployment (CI/CD) pipeline is implemented via GitHub Actions, ensuring that the project is evaluated not only on its functional merits but also on its maintainability, scalability, and alignment with industry DevOps standards.
+
+\section{Objectives}
+\noindent The primary objectives of the DragonPing project are as follows:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Unified Multi-Protocol Monitoring:} To design and implement a robust monitoring engine capable of tracking web services and network devices using HTTP, HTTPS, ICMP, and TCP protocols.
+    \item \textbf{Deep System Telemetry:} To develop a lightweight, shell-based agent that securely collects and transmits host-level system metrics (CPU, RAM, disk usage, and network throughput) to a centralised backend.
+    \item \textbf{Proactive Anomaly Detection:} To engineer a hybrid predictive analytics module that leverages EWMA baseline calculations and Isolation Forest machine learning to forecast service degradation prior to absolute failure.
+    \item \textbf{Automotive SDV Integration:} To architect a hardware-in-the-loop proof-of-concept using an ESP32 microcontroller acting as a vehicle ECU simulator, demonstrating the platform's viability in Software Defined Vehicle telemetry.
+    \item \textbf{Automated Alerting:} To implement an asynchronous notification system capable of dispatching alert emails via SMTP upon detecting status changes or high-risk performance anomalies.
+    \item \textbf{DevOps and CI/CD Implementation:} To containerise the complete application stack using Docker and automate the testing and build processes using GitHub Actions.
+\end{itemize}
+
+\section{Scope of the Project}
+\noindent The scope of DragonPing is defined by its target environments and functional boundaries. The platform is primarily tailored for small to medium-scale IT infrastructures, making it highly suitable for academic institutions, departmental intranets, and small enterprise networks. 
+
+\noindent Functionally, the monitoring scope includes sequential, scheduled polling of configured endpoints via an embedded APScheduler instance. The predictive analytics scope is focused strictly on time-series analysis of response times and uptime history on a per-service basis, rather than performing deep packet inspection or complex network traffic analysis. 
+
+\noindent The automotive extension is scoped strictly as a proof-of-concept prototype, detailed in Chapter~8.
+
+\noindent Finally, while the architecture provides foundational data models for Service Level Agreement (SLA) tracking and multi-channel notifications (such as Telegram), the notification scope includes both SMTP-based email alerting and Telegram Bot API messaging. Both channels are implemented and configurable via environment variables (\texttt{ENABLE\_TELEGRAM}, \texttt{TELEGRAM\_BOT\_TOKEN}). SSL certificate expiry monitoring and per-service SLA target tracking are also implemented features within the current scope. The deployment scope covers containerised execution using SQLite for development and PostgreSQL for production environments.
+
+\section{Organisation of the Report}
+\noindent The remainder of this report is organised as follows. Chapter~2 presents the problem definition and motivation for the proposed system. Chapter~3 reviews related literature. Chapter~4 describes the requirement analysis. Chapter~5 covers system design. Chapter~6 details the implementation of core modules. Chapter~7 presents the predictive anomaly detection engine in detail. Chapter~8 describes the automotive embedded systems extension. Chapter~9 outlines the testing methodology and results. Chapter~10 presents results and discussion. Chapter~11 concludes the report with future scope.
+%=============================================================
+% CHAPTER 2: PROBLEM DEFINITION AND MOTIVATION
+%=============================================================
+\chapter{PROBLEM DEFINITION AND MOTIVATION}
+
+The project examines the shortcomings of existing network monitoring tools and establishes the motivation for a unified, proactive platform. The chapter analyses available systems, identifies their functional gaps, and articulates the design goals that guided the development of DragonPing.
+
+\section{Existing Systems}
+\noindent The current landscape of IT infrastructure monitoring is dominated by a mix of legacy open-source platforms, modern lightweight status dashboards, and comprehensive enterprise cloud solutions. Tools such as Nagios and Zabbix have been industry standards for decades, offering extensive capabilities for tracking network devices and server health via protocols like SNMP and custom agent scripts. On the other end of the open-source spectrum, modern lightweight tools like Uptime Kuma provide highly visual, user-friendly interfaces specifically tailored for monitoring web service availability through HTTP/HTTPS and simple TCP checks.
+
+\noindent In the commercial sector, enterprise platforms such as Datadog, New Relic, and SolarWinds offer advanced observability, distributed tracing, and Artificial Intelligence for IT Operations (AIOps). These enterprise systems aggregate massive volumes of telemetry data to provide dynamic thresholding and automated anomaly detection. The standard operational workflow across both open-source and commercial systems involves periodic polling of target endpoints, evaluating the responses against predefined conditions, and dispatching alerts to administrators when a service fails or a metric crosses a static threshold.
+
+\section{Limitations of Existing Systems}
+\noindent Despite the maturity of the network monitoring domain, existing systems exhibit several critical limitations, particularly for small-to-medium enterprises and academic environments:
+
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Reactive Alerting Paradigm:} The vast majority of accessible open-source monitoring tools operate on a purely reactive basis. They rely on static thresholds (e.g., triggering an alert only when CPU usage exceeds 90\% or when an HTTP endpoint returns a 500 error). Consequently, administrators are notified of an outage only \textit{after} service degradation has already impacted end-users.
+    
+    \item \textbf{High Cost of Predictive Analytics:} While predictive analytics and machine learning (AIOps) have revolutionized enterprise observability, these features are typically gatekept behind prohibitively expensive SaaS licensing models (e.g., Datadog). Standard open-source tools lack native, out-of-the-box machine learning capabilities for forecasting latency degradation or anomalous behavioral patterns.
+    
+    \item \textbf{Domain Silos and Lack of Extensibility:} Existing tools are often compartmentalized. Lightweight tools like Uptime Kuma excel at web endpoints but lack deep host-level telemetry. Conversely, heavy infrastructure tools like Nagios have a steep learning curve and are notoriously difficult to configure for modern, non-traditional endpoints. Neither category readily accommodates emerging cross-domain telemetry, such as embedded systems or Software Defined Vehicle (SDV) Electronic Control Units (ECUs).
+\end{itemize}
+
+\section{Proposed System}
+\noindent To address these limitations, this project proposes \textbf{DragonPing}, a hybrid, multi-domain smart monitoring and predictive analytics platform. DragonPing is architected to bridge the gap between simple web dashboards and complex AIOps enterprise suites. 
+
+\noindent The core of the proposed system is a centralized FastAPI monitoring engine that utilizes APScheduler to concurrently poll web endpoints (HTTP/HTTPS), network hardware (ICMP), and specific service ports (TCP). To capture deep system metrics, the platform includes a lightweight, shell-based telemetry agent that pushes CPU, RAM, disk, and network utilization data from distributed Linux hosts to the centralized backend.
+
+\noindent A defining feature of the proposed system is its hybrid Predictive Anomaly Detection engine. Executing asynchronously every five minutes, this module analyzes historical response times using a three-method voting system: static rule-based thresholds, Exponentially Weighted Moving Average (EWMA) for statistical baseline deviation, and an unsupervised Isolation Forest machine learning model. This combination calculates a proactive risk score for each service.
+
+\noindent Furthermore, to break traditional domain silos, the system architecture proposes an automotive extension. By utilizing an ESP32 microcontroller as a hardware proxy for a vehicle ECU, DragonPing captures and visualizes simulated automotive telemetry (e.g., battery voltage and engine parameters), proving the platform's adaptability to Software Defined Vehicle (SDV) architectures. 
+
+\section{Advantages of the Proposed System}
+\noindent The DragonPing platform offers several distinct advantages over traditional monitoring setups:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Proactive Threat Mitigation:} By utilizing the hybrid ML predictive engine, the system can alert administrators to rising latency trends or anomalous behavior before an absolute service failure occurs, thereby minimizing unscheduled downtime.
+    \item \textbf{Unified Multi-Domain Visibility:} Administrators can monitor public-facing websites, internal network infrastructure, deep server host metrics, and embedded IoT/ECU hardware all from a single, cohesive React dashboard.
+    \item \textbf{Cost-Effective Intelligence:} DragonPing democratizes access to predictive analytics by embedding lightweight ML models (Isolation Forest via Scikit-learn) directly into an open-source architectural model, eliminating the need for expensive enterprise SaaS subscriptions.
+    \item \textbf{Modern Deployment Architecture:} Built with Docker containerization and automated via GitHub Actions CI/CD pipelines, the system guarantees ease of deployment, environment consistency, and high maintainability.
+\end{itemize}
+
+%=============================================================
+% CHAPTER 3: LITERATURE REVIEW
+%=============================================================
+\chapter{LITERATURE REVIEW}
+
+The project surveys foundational works in infrastructure monitoring, statistical anomaly detection, unsupervised machine learning, Software Defined Vehicle architectures, and modern deployment automation. Each reviewed work contributed specific insights that directly shaped design decisions in DragonPing.
+
+\section{Introduction}
+\noindent The field of network and infrastructure monitoring has evolved significantly over the past two decades, transitioning from simple ICMP-based availability checks to sophisticated observability platforms incorporating machine learning and distributed telemetry. This chapter reviews key works and tools that informed the design of DragonPing, covering traditional monitoring approaches, statistical anomaly detection, unsupervised machine learning for time-series data, and emerging Software Defined Vehicle architectures.
+
+\section{Review of Related Works}
+
+\noindent \textbf{[1] Nagios Core} \cite{nagios} is one of the earliest and most widely deployed open-source monitoring platforms. It introduced the concept of plugin-based check scripts and notification escalations, establishing foundational patterns for host and service monitoring. However, Nagios operates purely on static thresholds and offers no native predictive analytics capability. Its configuration complexity through flat INI-style files makes it unsuitable for rapid deployment in small to medium environments.
+
+\noindent \textbf{[2] Uptime Kuma} \cite{uptime_kuma}, developed by Lam (2021), represents the modern lightweight monitoring paradigm. It provides a visually polished dashboard with support for HTTP, TCP, DNS, and ICMP checks. Its public status page feature and notification system are direct inspirations for DragonPing's equivalent modules. However, Uptime Kuma does not support host-level resource monitoring, predictive analytics, or embedded hardware telemetry, which are core contributions of this project.
+
+\noindent \textbf{[3] Prometheus and Time-Series Monitoring} \cite{prometheus} is an open-source systems monitoring and alerting toolkit widely used in cloud-native environments. It follows a pull-based scraping model and stores metrics as time-series data. While Prometheus offers powerful query capabilities via PromQL, its complexity and resource footprint make it impractical for small lab environments. DragonPing adopts a simpler push-based agent model inspired by Prometheus's telemetry concepts but without the operational overhead.
+
+\noindent \textbf{[4] Isolation Forest for Anomaly Detection} \cite{isolation_forest}. Liu, Ting, and Zhou (2008) introduced the Isolation Forest algorithm, demonstrating its superior efficiency for anomaly detection in high-dimensional datasets compared to density-based approaches such as LOF and one-class SVM. The algorithm's sub-linear time complexity and independence from distance calculations make it particularly well-suited for continuous, incremental retraining on streaming monitoring data. DragonPing directly employs this algorithm as the machine learning component of its triple-check voting system.
+
+\noindent \textbf{[5] EWMA in Statistical Process Control} \cite{ewma}. Montgomery's foundational work on statistical quality control established EWMA as a robust method for detecting small sustained shifts in a process mean. The exponential weighting scheme assigns greater importance to recent observations, making it ideally suited for adapting to gradual performance degradation in network services. In DragonPing, EWMA forms the second detection layer, flagging latency deviations exceeding 2.5 standard deviations from the dynamic baseline.
+
+\noindent \textbf{[6] Forecasting at Scale with Prophet} \cite{taylor2018forecasting}. Taylor and Letham (2018) proposed the Prophet forecasting library, which models time-series data with seasonality, trend, and holiday components. The authors demonstrate its application to operational metrics at Facebook. While DragonPing does not implement Prophet due to scope constraints, this work informed the design decision to use EWMA as a simpler adaptive baseline and identified seasonality-awareness as a key limitation of the current system, noted in Chapter~10 as a future enhancement.
+
+\noindent \textbf{[7] Software Defined Vehicles and Zonal Architectures} \cite{sdv_autosar}. Proff and Finkbeiner (2023) describe the industry-wide transition from distributed ECU architectures to centralised compute platforms in modern vehicles. This transition, driven by standards such as AUTOSAR Adaptive, creates a demand for software-based monitoring of vehicle subsystems. DragonPing's automotive extension directly addresses this gap by demonstrating that a generalised monitoring platform can serve as a vehicle telemetry aggregator when deployed on the vehicle's central compute domain.
+
+\noindent \textbf{[8] JSON Web Tokens for Stateless Authentication} \cite{jwt_rfc}. Jones, Bradley, and Sakimura (2015) formalised the JWT specification as IETF RFC 7519. The compact, URL-safe token format enables stateless authentication in distributed systems without requiring server-side session storage. DragonPing employs JWT for both administrator session management and long-lived agent authentication, with separate token expiry policies for each use case.
+%=============================================================
+% CHAPTER 4: REQUIREMENT ANALYSIS
+%=============================================================
+\chapter{REQUIREMENT ANALYSIS}
+
+The project defines the hardware, software, functional, and non-functional requirements necessary for the successful development and deployment of DragonPing. The chapter provides the technical baseline against which the implemented system is evaluated.
+
+\section{Purpose}
+\noindent The Requirement Analysis phase serves as the foundation for the system engineering process. The primary purpose of this chapter is to clearly define the hardware, software, functional, and non-functional prerequisites necessary for the successful development, deployment, and operation of the DragonPing platform. By explicitly detailing these specifications, this analysis ensures that the proposed hybrid monitoring system---encompassing web telemetry, deep network infrastructure tracking, predictive machine learning analytics, and embedded automotive extensions---can operate reliably within its intended operational environments.
+
+\section{Hardware Requirements}
+\noindent The hardware requirements for DragonPing are divided into two categories: the central monitoring server hosting the core engine, and the distributed edge devices (agents and ECU simulators) being monitored. The specifications outlined in Table \ref{tab:hardware} represent the minimum configurations required to run the containerised backend, frontend, and database services efficiently without performance bottlenecks during the evaluation phase.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{0.85\textwidth}{|l|X|}
+\hline
+\textbf{Component} & \textbf{Specification} \\
+\hline
+Processor & Intel Core i3 (or equivalent ARM/AMD processor) \\
+\hline
+RAM & 4 GB minimum, 8 GB recommended \\
+\hline
+Storage & 20 GB free disk space (SSD preferred for database I/O) \\
+\hline
+Network & Gigabit LAN / Stable WiFi connectivity \\
+\hline
+Embedded Hardware & ESP32 Microcontroller (for automotive SDV extension) \\
+\hline
+\end{tabularx}
+\caption{Hardware Requirements}
+\label{tab:hardware}
+\end{table}
+
+\section{Software Requirements}
+\noindent DragonPing employs a modern, asynchronous technology stack. The system is designed to be highly portable through Docker containerisation. The software tools, frameworks, and deployment environments required for the development and operation of the project are detailed in Table \ref{tab:software}.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{0.85\textwidth}{|l|X|}
+\hline
+\textbf{Component} & \textbf{Tool / Version} \\
+\hline
+Operating System & Windows 10 / Ubuntu 22.04 LTS (Host OS) \\
+\hline
+Backend Framework & FastAPI (Python 3.11) \\
+\hline
+Frontend Framework & React 18, Vite, Tailwind CSS \\
+\hline
+Database & SQLite (Development), PostgreSQL (Production) \\
+\hline
+Containerisation & Docker, Docker Compose \\
+\hline
+CI/CD Pipeline & GitHub Actions \\
+\hline
+IDE & VS Code \\
+\hline
+Web Browser & Google Chrome, Mozilla Firefox \\
+\hline
+\end{tabularx}
+\caption{Software Requirements}
+\label{tab:software}
+\end{table}
+
+\section{Functional Requirements}
+\noindent Functional requirements define the specific behaviours, actions, and data orchestration that the system must support. The core functional requirements of the DragonPing platform include:
+
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{User Authentication and Authorisation:} The system must provide secure login and registration capabilities using JSON Web Tokens (JWT). It must enforce Role-Based Access Control (RBAC), distinguishing between standard users and system administrators.
+    \item \textbf{Multi-Protocol Service Monitoring:} The core engine must be capable of executing scheduled health checks. It must support HTTP/HTTPS for web endpoints (including SSL certificate expiry tracking), ICMP (Ping) for network device availability, and TCP for specific port connectivity.
+    \item \textbf{Agent-Based Telemetry Ingestion:} The backend must provide secure REST API endpoints to receive heartbeat payloads from remote shell-based agents. These payloads must include real-time host metrics such as CPU utilisation, RAM usage, disk capacity, and network interface throughput.
+    \item \textbf{Predictive Anomaly Detection:} The system must incorporate a background scheduling mechanism that runs every five minutes. This module must evaluate historical response times using static thresholds, EWMA baselining, and an Isolation Forest machine learning model to compute and store a predictive risk score for each monitored service.
+    \item \textbf{Automated Alerting:} The platform must detect state transitions (e.g., from UP to DOWN) and trigger asynchronous notifications. It must dispatch formatting alerting emails via SMTP to registered administrators when a service fails or exhibits a high predictive risk of degradation.
+\end{itemize}
+
+\section{Non-Functional Requirements}
+\noindent Non-functional requirements define the quality attributes, system architecture principles, and operational constraints of the platform.
+
+\subsection{Performance Requirements}
+\noindent Because monitoring systems are inherently I/O bound, performance is a critical factor. The backend must utilise asynchronous processing (via Python's \texttt{asyncio} and FastAPI) to concurrently poll hundreds of configured endpoints without blocking the main execution thread. The \texttt{APScheduler} must reliably trigger the monitoring loop every 30 seconds. Furthermore, the frontend Single Page Application (SPA) must automatically poll and render updated status metrics without requiring full page reloads, ensuring real-time dashboard responsiveness.
+
+\subsection{Security Requirements}
+\noindent The system must ensure data integrity and secure access across all domains. User passwords must be cryptographically hashed using the \texttt{bcrypt} algorithm before database insertion. API routes handling sensitive configurations or historical data must be protected via JWT authentication. Furthermore, remote telemetry agents must authenticate their HTTP payloads using long-lived secure tokens to prevent malicious actors from injecting false system metrics into the central database. 
+
+\subsection{Reliability Requirements}
+\noindent As an infrastructure monitoring tool, DragonPing must possess high intrinsic reliability. The application must be containerised using Docker, ensuring that the execution environment remains consistent across development, testing, and production deployments, thereby mitigating "works-on-my-machine" anomalies. Additionally, the integration of a GitHub Actions CI/CD pipeline enforces automated unit testing (via \texttt{pytest}) and code linting (via \texttt{ruff}) on every code commit, preventing broken code from being merged into the primary branch. Data persistence must be reliably managed through the SQLAlchemy ORM, ensuring seamless transitions between lightweight SQLite databases and robust PostgreSQL clusters.
+
+\section{Use Case Diagram}
+\noindent The Use Case Diagram identifies the primary actors and their interactions with the DragonPing system. Three external actors are identified: the \textbf{Administrator} who configures and manages the platform, the \textbf{Public User} who views the public status page, and the \textbf{Shell Agent} deployed on remote hosts (which also represents embedded edge devices such as the ESP32).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  actor/.style={circle, draw, minimum size=0.6cm, font=\footnotesize},
+  usecase/.style={ellipse, draw, text width=2.8cm, align=center, font=\footnotesize, minimum height=1cm},
+  every node/.style={font=\small},
+  >=Stealth
+]
+% System boundary
+\draw[rounded corners, thick] (-1.5,-5.5) rectangle (7.5,2.5);
+\node[font=\normalsize\bfseries] at (3,2.1) {DragonPing System};
+
+% Actors
+\node[actor, label=below:{\scriptsize Administrator}] (admin) at (-3,0) {A};
+\node[actor, label=below:{\scriptsize Public User}] (public) at (-3,-3.5) {P};
+\node[actor, label=below:{\scriptsize Shell Agent}] (agent) at (10,-1) {SA};
+
+% Use cases
+\node[usecase] (login) at (1.5,1.5) {Login / Register};
+\node[usecase] (manage) at (5,1.5) {Manage Services};
+\node[usecase] (monitor) at (1.5,-0.5) {Monitor Services};
+\node[usecase] (predict) at (5,-0.5) {Predict Anomalies};
+\node[usecase] (alert) at (1.5,-2.5) {Receive Alerts};
+\node[usecase] (dashboard) at (5,-2.5) {View Dashboard};
+\node[usecase] (telemetry) at (3,-4.5) {Push Telemetry /\\Heartbeat};
+
+% Connections
+\draw[->] (admin) -- (login);
+\draw[->] (admin) -- (manage);
+\draw[->] (admin) -- (monitor);
+\draw[->] (admin) -- (alert);
+\draw[->] (admin) -- (dashboard);
+\draw[->] (public) -- (dashboard);
+\draw[->] (agent) -- (telemetry);
+\draw[dashed, ->] (monitor) -- node[above, font=\tiny]{<<include>>} (predict);
+\draw[dashed, ->] (predict) -- node[right, font=\tiny]{<<extend>>} (alert);
+\end{tikzpicture}
+\caption{Use Case Diagram of DragonPing}
+\label{fig:usecase}
+\end{figure}
+
+%=============================================================
+% CHAPTER 5: SYSTEM DESIGN
+%=============================================================
+\chapter{SYSTEM DESIGN}
+
+The project details the architectural decisions, database schema, module boundaries, and data flow patterns that form the structural foundation of DragonPing. The chapter presents the layered architecture through diagrams and schema definitions.
+
+\section{System Architecture}
+\noindent DragonPing follows a robust client-server architecture augmented by distributed telemetry agents. The system is logically partitioned into discrete layers to separate concerns, improve maintainability, and ensure scalability across multiple network domains.
+
+\noindent The architecture consists of the following primary layers:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Frontend Presentation Layer:} A Single Page Application (SPA) built with React 18 and Tailwind CSS, responsible for rendering real-time dashboards, service health matrices, and administrative configuration panels.
+    \item \textbf{Backend API Layer:} A FastAPI application acting as the central orchestrator. It exposes RESTful endpoints, handles JSON Web Token (JWT) authentication, and manages data persistence through the SQLAlchemy Object Relational Mapper (ORM).
+    \item \textbf{Core Execution Engines:} 
+    \begin{itemize}[label=$\circ$, leftmargin=*]
+        \item \textit{Monitoring Engine:} Utilises \texttt{APScheduler} to execute asynchronous, non-blocking health checks (HTTP, ICMP, TCP) across all configured targets.
+        \item \textit{Predictive Engine:} An asynchronous background worker that periodically analyses historical response times using statistical (EWMA) and machine learning (Isolation Forest) algorithms to generate risk scores.
+    \end{itemize}
+    \item \textbf{Distributed Edge Layer:} Lightweight, shell-based agent scripts deployed on target Linux hosts that collect and push deep system metrics (CPU, memory, disk, network) back to the central server via secure HTTP payloads. This layer also encompasses embedded hardware devices such as the ESP32 microcontroller used in the automotive extension (detailed in Chapter~8).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    % width=\textwidth makes the image span the full width of your text margins
+    \includegraphics[width=0.8\textwidth]{architecture.png} 
+    \caption{System Architecture of DragonPing}
+    \label{fig:architecture}
+\end{figure}
+
+\section{Database Design}
+\noindent The system relies on a relational database management system to ensure ACID (Atomicity, Consistency, Isolation, Durability) compliance for monitoring data. The application uses SQLite for local development and lightweight deployments, while seamlessly supporting PostgreSQL for production environments via the SQLAlchemy ORM.
+
+\subsection{Entity Relationship Diagram}
+\noindent The database schema is designed around the \texttt{services} entity, which acts as the central node. 
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item A \textbf{One-to-Many} relationship exists between \texttt{services} and \texttt{checks}, where each service accumulates thousands of historical health check records.
+    \item A \textbf{One-to-One} or \textbf{One-to-Many} relationship exists between \texttt{services} and \texttt{service\_predictions}, storing the latest machine learning risk evaluations.
+    \item A \textbf{One-to-Many} relationship exists between \texttt{registered\_agents} and \texttt{agent\_metrics}, tracking the historical telemetry of a specific hardware host.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  entity/.style={draw, rectangle, rounded corners=2pt, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\footnotesize\bfseries, fill=blue!8},
+  rel/.style={font=\tiny, midway, fill=white, inner sep=1pt},
+  >=Stealth
+]
+% Central entity
+\node[entity, fill=green!15] (services) at (0,0) {services};
+
+% Connected entities
+\node[entity] (users) at (-5,2) {users};
+\node[entity] (checks) at (-4,-2) {checks};
+\node[entity] (predictions) at (4,-2) {service\_predictions};
+\node[entity] (alerts) at (0,-3.5) {alert\_logs};
+\node[entity] (agents) at (5,2) {registered\_agents};
+\node[entity] (metrics) at (5,0) {agent\_metrics};
+
+% Relationships
+\draw[->, thick] (users) -- node[rel, above]{1:N} (services);
+\draw[->, thick] (services) -- node[rel, left]{1:N} (checks);
+\draw[->, thick] (services) -- node[rel, right]{1:N} (predictions);
+\draw[->, thick] (services) -- node[rel, left]{1:N} (alerts);
+\draw[->, thick] (agents) -- node[rel, right]{1:N} (metrics);
+\draw[dashed, ->, thick] (users) -| node[rel, above, pos=0.25]{owns} (agents);
+\end{tikzpicture}
+\caption{Entity Relationship Diagram}
+\label{fig:er_diagram}
+\end{figure}
+
+\subsection{Database Schema}
+\noindent The core tables are defined below, detailing their primary keys, data types, and structural relationships.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique user identifier \\
+email & String & Unique, Indexed & User email address \\
+password\_hash & String & -- & Bcrypt hashed password \\
+is\_admin & Boolean & -- & Admin role flag \\
+created\_at & DateTime & -- & Account creation timestamp \\
+\hline
+\end{tabularx}
+\caption{Users Table}
+\label{tab:users}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique service identifier \\
+name & String & -- & Service display name \\
+type & Enum & -- & website or device \\
+protocol & Enum & -- & http, https, icmp, tcp \\
+url & String & -- & Target URL (websites) \\
+ip\_address & String & -- & Target IP (devices) \\
+port & Integer & -- & TCP port (optional) \\
+interval & Integer & -- & Check interval in seconds \\
+is\_public & Boolean & -- & Visible on public status page \\
+active & Boolean & -- & Monitoring enabled flag \\
+\hline
+\end{tabularx}
+\caption{Services Table}
+\label{tab:services}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique check identifier \\
+service\_id & Integer & Foreign Key & Reference to services table \\
+status & Enum & -- & UP, DOWN, or UNKNOWN \\
+status\_code & Integer & -- & HTTP response code \\
+response\_time & Float & -- & Response time in milliseconds \\
+error\_message & Text & -- & Error description if failed \\
+checked\_at & DateTime & Indexed & Timestamp of check \\
+\hline
+\end{tabularx}
+\caption{Checks Table}
+\label{tab:checks}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique record identifier \\
+hostname & String & Indexed & Device hostname \\
+cpu\_percent & Float & -- & CPU utilisation percentage \\
+ram\_percent & Float & -- & RAM utilisation percentage \\
+disk\_percent & Float & -- & Disk utilisation percentage \\
+net\_rx\_bytes & BigInteger & -- & Network bytes received \\
+net\_tx\_bytes & BigInteger & -- & Network bytes transmitted \\
+processes & Text & -- & JSON array of top processes \\
+recorded\_at & DateTime & Indexed & Metric collection timestamp \\
+\hline
+\end{tabularx}
+\caption{Agent Metrics Table}
+\label{tab:agent}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique prediction identifier \\
+service\_id & Integer & Foreign Key & Reference to services table \\
+risk\_level & Enum & -- & LOW, MEDIUM, or HIGH \\
+confidence & Float & -- & ML model confidence score \\
+reason & Text & -- & Explanation of anomaly \\
+votes & Integer & -- & Number of voting models triggered \\
+created\_at & DateTime & Indexed & Timestamp of prediction \\
+\hline
+\end{tabularx}
+\caption{Service Predictions Table}
+\label{tab:predictions}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Field} & \textbf{Type} & \textbf{Key} & \textbf{Description} \\
+\hline
+id & Integer & Primary Key & Unique log identifier \\
+alert\_type & String & -- & Type of alert (e.g., email) \\
+recipient\_email & String & -- & Target email address \\
+sent\_at & DateTime & -- & Timestamp of alert dispatch \\
+\hline
+\end{tabularx}
+\caption{Alert Logs Table}
+\label{tab:alert_logs}
+\end{table}
+
+\section{Module Design}
+\noindent The system is highly modularised, allowing independent development and scaling of individual components.
+
+\subsection{Authentication and Security Module}
+\noindent Handles user registration, login, and token generation. It employs bcrypt for password hashing and issues JSON Web Tokens (JWT) for stateless authentication. It also manages long-lived authentication tokens specifically provisioned for remote telemetry agents.
+
+\subsection{Monitoring Execution Module}
+\noindent The core operational unit of the backend. It leverages the \texttt{APScheduler} to spawn background tasks at user-defined intervals (e.g., every 30 seconds). It dynamically routes checks based on the service protocol: mapping HTTP targets to the \texttt{httpx} library, ICMP targets to the \texttt{pythonping} library, and TCP targets to native Python sockets.
+
+\subsection{Predictive Analytics Module}
+\noindent Operating on a slower execution loop (typically every 5 minutes), this module retrieves a predefined window of historical \texttt{checks} data for each service. It sequentially applies static threshold rules, EWMA baselining, and Scikit-learn's Isolation Forest algorithm to calculate a composite risk score, outputting the result to the \texttt{service\_predictions} table.
+
+\subsection{Alerting and Notification Module}
+\noindent This module acts as an event listener. When the Monitoring Module registers a state change (e.g., UP to DOWN after 5 consecutive failures) or the Predictive Module flags a HIGH risk, the Alerting Module triggers asynchronous SMTP operations via \texttt{aiosmtplib} to dispatch formatting email warnings to system administrators.
+
+\section{API Design}
+\noindent The backend adheres strictly to RESTful API design principles, utilising JSON for data interchange. Routes are logically grouped using FastAPI's \texttt{APIRouter}. 
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{/auth:} Endpoints for user authentication and token retrieval.
+    \item \textbf{/services:} CRUD (Create, Read, Update, Delete) operations for monitoring targets.
+    \item \textbf{/status:} Read-only endpoints providing aggregated metrics, recent checks, and historical logs for frontend visualisations.
+    \item \textbf{/agent:} Telemetry ingestion endpoints receiving POST requests from remote edge devices.
+\end{itemize}
+\noindent A comprehensive list of API endpoints is provided in Appendix \ref{app:api}.
+
+\section{Data Flow Diagram}
+\noindent The Data Flow Diagram (DFD) maps the movement of information through the DragonPing system.
+
+\subsection{Level 0 DFD (Context Diagram)}
+\noindent The Context Diagram illustrates the system as a single cohesive process. The primary external entities interacting with the system are the \textbf{Administrator} (who provides configuration data and receives alerts), the \textbf{Remote Agents / ECU Simulator} (which push telemetry payloads), and the \textbf{Target Services} (which return HTTP/ICMP/TCP responses to the monitoring engine).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  ext/.style={draw, rectangle, minimum width=3cm, minimum height=1cm,
+              align=center, font=\footnotesize, fill=gray!15},
+  proc/.style={draw, circle, minimum size=3cm, align=center,
+               font=\footnotesize\bfseries, fill=blue!10},
+  arr/.style={-{Stealth[length=2.5mm]}, thick},
+  lbl/.style={font=\tiny, fill=white, inner sep=2pt},
+  >=Stealth
+]
+
+% Central process
+\node[proc] (dp) at (0,0) {DragonPing\\System};
+
+% External entities
+\node[ext] (admin)   at (-5.5, 0)  {Administrator};
+\node[ext] (agents)  at ( 5.5, 0)  {Edge Agents\\(Linux / IoT)};
+\node[ext] (targets) at (  0, -4.5){Target Services\\(HTTP/ICMP/TCP)};
+
+% Admin -> DragonPing (Service config) -- above
+\draw[arr] (admin.east)
+    to[bend left=20]
+    node[lbl, above]{Service config}
+    (dp.west);
+
+% DragonPing -> Admin (Alerts & Reports) -- below
+\draw[arr] (dp.west)
+    to[bend left=20]
+    node[lbl, below]{Alerts \& Reports}
+    (admin.east);
+
+% Agents -> DragonPing (Telemetry payloads)
+\draw[arr] (agents.west)
+    -- node[lbl, above]{Telemetry payloads}
+    (dp.east);
+
+% DragonPing -> Targets (Health check probes)
+\draw[arr] (dp.south)
+    to[bend right=15]
+    node[lbl, right]{Health check probes}
+    (targets.north);
+
+% Targets -> DragonPing (Responses)
+\draw[arr] (targets.north)
+    to[bend right=15]
+    node[lbl, left]{Responses}
+    (dp.south);
+
+\end{tikzpicture}
+\caption{Level 0 DFD --- Context Diagram}
+\label{fig:dfd0}
+\end{figure}
+
+\subsection{Level 1 DFD}
+\noindent The Level 1 DFD decomposes the system into its primary sub-processes:
+\begin{enumerate}
+    \item \textbf{Configuration Flow:} Administrators send service parameters via the frontend, which are validated by the FastAPI router and written to the database.
+    \item \textbf{Monitoring Flow:} The \texttt{APScheduler} retrieves target lists from the database, executes network requests against the external services, and writes the response latency and status codes back to the \texttt{checks} table.
+    \item \textbf{Analytics Flow:} The Predictive Engine periodically reads arrays of recent checks from the database, processes them through the Scikit-learn models, and updates the \texttt{service\_predictions} table.
+    \item \textbf{Alerting Flow:} Upon detecting anomalies in the datastream, the alert module extracts administrator contact details and dispatches notifications via external SMTP servers.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  proc/.style={draw, circle, minimum size=1.6cm, align=center, font=\tiny\bfseries, fill=blue!10},
+  ext/.style={draw, rectangle, minimum width=2cm, minimum height=0.7cm, align=center, font=\tiny, fill=gray!15},
+  store/.style={draw, rectangle, minimum width=2cm, minimum height=0.5cm, align=center, font=\tiny, fill=yellow!10},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  lbl/.style={font=\tiny, fill=white, inner sep=1pt, midway},
+  >=Stealth
+]
+% Processes
+\node[proc] (p1) at (0,2) {\\Config\\Manager};
+\node[proc] (p2) at (4,2) {\\Monitoring\\Engine};
+\node[proc] (p3) at (4,-1.5) {\\Predictive\\Engine};
+\node[proc] (p4) at (0,-1.5) {\\Alert\\Module};
+
+% External entities
+\node[ext] (admin) at (-3.5,2) {Admin};
+\node[ext] (targets) at (8,2) {Target\\Services};
+\node[ext] (smtp) at (-3.5,-1.5) {SMTP\\Server};
+
+% Data stores
+\node[store] (db) at (2,0) {D1: Database};
+
+% Flows
+\draw[arr] (admin) -- node[lbl,above]{Config} (p1);
+\draw[arr] (p1) -- node[lbl,right]{Services} (db);
+\draw[arr] (db) -- node[lbl,above]{Targets} (p2);
+\draw[arr] (p2) -- node[lbl,above]{Probes} (targets);
+\draw[arr] (targets) -- node[lbl,below]{Responses} (p2);
+\draw[arr] (p2) -- node[lbl,right]{Checks} (db);
+\draw[arr] (db) -- node[lbl,above]{History} (p3);
+\draw[arr] (p3) -- node[lbl,right]{Predictions} (db);
+\draw[arr] (p3) -- node[lbl,below]{High risk} (p4);
+\draw[arr] (p4) -- node[lbl,above]{Email} (smtp);
+\draw[arr] (p4) -- node[lbl,left]{Alert log} (db);
+\end{tikzpicture}
+\caption{Level 1 Data Flow Diagram}
+\label{fig:dfd1}
+\end{figure}
+%=============================================================
+% CHAPTER 6: IMPLEMENTATION
+%=============================================================
+\chapter{IMPLEMENTATION}
+
+The project describes the complete implementation of all DragonPing modules, covering the authentication system, multi-protocol monitoring engine, shell-based telemetry agent, alert dispatcher, and DevOps pipeline. Key implementation decisions and representative code samples are presented.
+
+\section{Technology Stack}
+\noindent The implementation of DragonPing relies on a modern, asynchronous technology stack selected for its high performance, ease of scalability, and rich ecosystem.
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Backend:} Python 3.11 using the FastAPI framework. FastAPI was chosen for its native asynchronous capabilities (\texttt{asyncio}), which are critical for executing concurrent network I/O operations without blocking the main thread.
+    \item \textbf{Frontend:} React 18, scaffolded with Vite for rapid module bundling, and styled using Tailwind CSS for responsive, utility-first design.
+    \item \textbf{Database:} SQLite is utilised for local development and lightweight portability, while PostgreSQL is supported for production environments. Database interactions are abstracted using the SQLAlchemy Object Relational Mapper (ORM).
+    \item \textbf{Machine Learning:} The \texttt{scikit-learn} library is employed for the Isolation Forest implementation, alongside native Python math libraries for statistical process control.
+    \item \textbf{DevOps:} Docker and Docker Compose are used for containerisation, and GitHub Actions is utilised for the Continuous Integration pipeline.
+\end{itemize}
+
+\section{Development Methodology}
+\noindent DragonPing was developed following the Scrum agile methodology, to ensure iterative progress and continuous integration of features.
+
+
+
+\section{Core Modules}
+
+\subsection{Authentication Module}
+\noindent The authentication module is implemented in \texttt{app/auth.py}. It uses the \texttt{bcrypt} algorithm to hash user passwords before storage. The system generates JSON Web Tokens (JWT) for stateless session management. Two types of tokens are issued: short-lived session tokens for frontend administrators, and long-lived tokens (valid for 365 days) provisioned securely for remote telemetry agents. The module implements strict Role-Based Access Control (RBAC), ensuring that only administrative accounts can modify monitoring configurations.
+
+\subsection{Service Monitoring Module}
+\noindent The core monitoring logic resides in \texttt{app/monitor.py} and \texttt{app/scheduler.py}. The \texttt{APScheduler} library runs a background thread that triggers the \texttt{MonitoringService.run\_checks} function asynchronously every 30 seconds. 
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Web Services (HTTP/HTTPS):} Utilises the asynchronous \texttt{httpx} library to perform GET requests. Responses with HTTP status codes below 400 are recorded as \texttt{UP}. The module also extracts and evaluates SSL certificate expiry dates.
+    \item \textbf{Network Devices (ICMP \& TCP):} Implements \texttt{pythonping} to calculate the Round Trip Time (RTT) for ICMP echo requests. TCP connectivity is verified using Python's native \texttt{socket} library by attempting non-blocking handshakes on specified ports.
+\end{itemize}
+\noindent The results, including latency and status transitions, are continuously persisted to the \texttt{checks} database table.
+
+\subsection{Alert System}
+\noindent The alerting mechanism is condition-based. To prevent alert fatigue caused by transient network spikes, the system requires five consecutive failed checks before officially marking a service as \texttt{DOWN} and triggering an alert. The notification logic is implemented in \texttt{app/alerts.py} using the \texttt{aiosmtplib} library to dispatch formatted HTML emails via a configured SMTP server. Alerts are also triggered if an SSL certificate is within 30 days of expiration or if the predictive engine identifies a critical anomaly.
+
+\subsection{Shell Agent}
+\noindent To capture deep host-level metrics, a lightweight Bash script acts as a distributed agent. Operating via a \texttt{cron} job on the target Linux machine, the agent extracts system parameters---specifically CPU percentage, RAM utilisation, disk usage, and network interface byte counters (\texttt{rx\_bytes} / \texttt{tx\_bytes}). This data is encapsulated in a JSON payload and pushed to the backend's \texttt{/api/agent/heartbeat} endpoint, authenticated via the agent's pre-provisioned JWT.
+
+\section{Predictive Anomaly Detection}
+\noindent The predictive anomaly detection engine is a defining feature of DragonPing. Due to the complexity and significance of this module, a comprehensive treatment---including theoretical foundations, mathematical formulations, and implementation details---is presented in the dedicated Chapter~7.
+
+\section{DevOps and Deployment}
+
+\subsection{Docker Containerisation}
+\noindent To guarantee environment consistency, DragonPing is fully containerised. Multi-stage \texttt{Dockerfile} configurations are defined for both the FastAPI backend and the React frontend. A root \texttt{docker-compose.yml} file orchestrates the deployment, provisioning the API service, the Nginx reverse proxy (for serving the compiled frontend SPA), and the PostgreSQL database container on an isolated internal Docker network.
+
+\subsection{CI/CD Pipeline}
+\noindent Continuous Integration and Delivery are managed via GitHub Actions. The workflow, defined in \texttt{.github/workflows/ci.yml}, is triggered automatically upon any push or pull request to the main branch. The pipeline executes two primary jobs:
+\begin{enumerate}
+    \item \textbf{Linting:} Runs \texttt{ruff} to enforce Python PEP-8 code styling and catch static programmatic errors.
+    \item \textbf{Testing:} Executes the \texttt{pytest} suite against an ephemeral SQLite database to validate the core routing, authentication, and monitoring logic before allowing code merges.
+\end{enumerate}
+
+\section{Sample Code}
+
+\begin{lstlisting}[language=Python, caption={Monitoring Engine Scheduler Task}, label={lst:scheduler}]
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from app.monitor import MonitoringService
+import logging
+
+logger = logging.getLogger(__name__)
+
+async def scheduled_monitoring_job():
+    logger.info("Starting scheduled monitoring cycle...")
+    await MonitoringService.run_checks()
+    logger.info("Monitoring cycle completed.")
+
+def start_scheduler():
+    scheduler = AsyncIOScheduler()
+    # Execute the monitoring loop every 30 seconds
+    scheduler.add_job(scheduled_monitoring_job, 'interval', seconds=30)
+    scheduler.start()
+    return scheduler
+\end{lstlisting}
+
+\section{User Interface Screenshots}
+\noindent The following figures present the key screens of the DragonPing web application as deployed during testing.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{dasboard.png}
+\caption{Main Monitoring Dashboard showing service status cards, uptime percentages, and response time sparklines}
+\label{fig:ui_dashboard}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{server_resource_monitor.png}
+\caption{Agent Resource Dashboard displaying CPU, RAM, disk, and network utilisation with real-time ring gauges and history charts}
+\label{fig:ui_resource}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{status_page.png}
+\caption{Public Status Page showing service availability without authentication, accessible to end users}
+\label{fig:ui_status}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{add_monitor.png}
+\caption{Add Monitor Interface for configuring new HTTP, ICMP, and TCP monitoring targets}
+\label{fig:ui_addmonitor}
+\end{figure}
+
+%=============================================================
+% CHAPTER 7: PREDICTIVE ANOMALY DETECTION
+%=============================================================
+\chapter{PREDICTIVE ANOMALY DETECTION}
+
+The project presents the theoretical foundations and implementation of the hybrid predictive engine that distinguishes DragonPing from reactive monitoring tools. The chapter covers the EWMA statistical baseline, Isolation Forest machine learning model, nine-dimensional feature engineering, and the three-method voting system.
+
+\section{Introduction}
+\noindent Traditional network monitoring systems operate under a purely reactive paradigm: alerts are dispatched only after a service has already failed. DragonPing addresses this critical limitation by implementing a hybrid predictive anomaly detection engine that identifies performance degradation \textit{before} an absolute outage occurs. This chapter provides a comprehensive treatment of the theoretical foundations, feature engineering methodology, detection algorithms, and system integration of the predictive module.
+
+\noindent The engine executes asynchronously every 5~minutes via \texttt{APScheduler}, independently of the primary 30-second monitoring loop. For each active service, it retrieves a rolling window of the most recent 30 health checks and processes the data through a three-method voting pipeline. The composite risk assessment is then persisted to the \texttt{service\_predictions} database table for dashboard visualisation and alert triggering.
+
+\section{Theoretical Foundation}
+
+\subsection{Exponentially Weighted Moving Average (EWMA)}
+\noindent The EWMA is a statistical process control technique specifically designed to detect gradual shifts in time-series data. Unlike a simple moving average, the EWMA assigns exponentially decreasing weights to older observations, making it highly sensitive to recent trends while maintaining stability against short-term noise.
+
+\noindent The EWMA is computed recursively as:
+\begin{equation}
+\label{eq:ewma}
+S_t = \alpha \cdot x_t + (1 - \alpha) \cdot S_{t-1}
+\end{equation}
+where $S_t$ is the smoothed value at time $t$, $x_t$ is the observed response time at time $t$, and $\alpha$ is the smoothing factor ($0 < \alpha \leq 1$). In DragonPing, $\alpha = 0.3$ is used, balancing responsiveness to recent changes against noise tolerance.
+
+\noindent The residual at each time step is computed as:
+\begin{equation}
+r_t = |x_t - S_t|
+\end{equation}
+
+\noindent The standard deviation of residuals is calculated as:
+\begin{equation}
+\sigma_r = \sqrt{\frac{1}{n} \sum_{t=1}^{n} (r_t - \bar{r})^2}
+\end{equation}
+where $\bar{r}$ is the mean residual. An anomaly is flagged when the current deviation exceeds $2.5\sigma_r$ from the EWMA baseline:
+\begin{equation}
+\text{EWMA flag} = \begin{cases} \text{TRUE}, & \text{if } |x_\text{latest} - S_n| > 2.5 \cdot \sigma_r \\ \text{FALSE}, & \text{otherwise} \end{cases}
+\end{equation}
+
+\subsection{Isolation Forest Algorithm}
+\noindent The Isolation Forest, introduced by Liu et al.\ \cite{isolation_forest}, is an unsupervised anomaly detection algorithm based on the principle of \textit{isolation}. Unlike density-based approaches, the Isolation Forest explicitly isolates anomalies rather than profiling normal instances.
+
+\noindent The algorithm constructs an ensemble of $T$ binary Isolation Trees (iTrees). Each iTree is built by randomly selecting a feature and a random split value between the minimum and maximum of that feature. Because anomalies are statistically rare and structurally distinct, they are isolated in fewer partitions---i.e., they reside closer to the root of the tree.
+
+\noindent The anomaly score for an observation $\mathbf{x}$ is defined as:
+\begin{equation}
+s(\mathbf{x}, n) = 2^{-\frac{E[h(\mathbf{x})]}{c(n)}}
+\end{equation}
+where $E[h(\mathbf{x})]$ is the average path length of $\mathbf{x}$ across all iTrees, and $c(n)$ is the average path length of unsuccessful search in a Binary Search Tree. A score $s \approx 1$ indicates a strong anomaly. In DragonPing, the model uses 50 estimators with a contamination factor of 0.1 (10\% expected anomaly rate).
+
+\section{Feature Engineering}
+\noindent The quality of anomaly detection depends critically on the feature vector supplied to the models. The \texttt{extract\_features} function in \texttt{app/predictor.py} transforms raw database records into a structured 9-dimensional feature vector for each service.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Feature} & \textbf{Type} & \textbf{Description} \\
+\hline
+mean\_response & Float & Mean response time over the last 30 checks \\
+\hline
+std\_response & Float & Standard deviation of response times \\
+\hline
+trend & Float & Difference between recent-half and old-half mean \\
+\hline
+down\_rate & Float & Fraction of checks with status DOWN \\
+\hline
+flip\_count & Integer & Number of UP$\leftrightarrow$DOWN status transitions \\
+\hline
+consecutive\_slow & Integer & Max streak of responses $> 2\times$ mean \\
+\hline
+cpu\_mean & Float & Mean CPU utilisation from linked agent (if available) \\
+\hline
+ram\_mean & Float & Mean RAM utilisation from linked agent (if available) \\
+\hline
+net\_saturation & Float & Normalised network throughput (0.0 to 1.0) \\
+\hline
+\end{tabularx}
+\caption{Feature Vector Components for Predictive Analysis}
+\label{tab:features}
+\end{table}
+
+\noindent When a shell agent is linked to the service's owner, the feature extractor enriches the vector with host-level telemetry (CPU, RAM, and network saturation), enabling infrastructure-aware risk assessment.
+
+\section{Detection Methods}
+
+\subsection{Method 1: Threshold Rules}
+\noindent The first layer evaluates six heuristic rules against the extracted features:
+\begin{enumerate}
+    \item \textbf{Response Time Spike:} Triggered if the latest response time exceeds $3\times$ the historical mean.
+    \item \textbf{High Down Rate:} Triggered if more than 20\% of recent checks returned \texttt{DOWN}.
+    \item \textbf{Service Flapping:} Triggered if $\geq 4$ status transitions (UP$\leftrightarrow$DOWN) are detected.
+    \item \textbf{Consecutive Slow Responses:} Triggered if $\geq 5$ consecutive checks exceed $2\times$ the mean response time.
+    \item \textbf{CPU Overload:} Triggered if sustained CPU utilisation exceeds 88\% (agent data required).
+    \item \textbf{RAM Overload:} Triggered if sustained RAM utilisation exceeds 90\% (agent data required).
+\end{enumerate}
+
+\subsection{Method 2: EWMA Deviation}
+\noindent The EWMA module applies the statistical baseline described in Section 7.2.1. The smoothing factor $\alpha = 0.3$ is applied across the historical window. An anomaly is flagged only when:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item The standard deviation of residuals exceeds a minimum noise floor of 5\,ms (to avoid false positives on very stable services).
+    \item The current latency deviates by more than $2.5$ standard deviations from the EWMA baseline.
+\end{itemize}
+
+\subsection{Method 3: Isolation Forest}
+\noindent The Isolation Forest model operates with the following configuration:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Training Data:} 200 most recent checks, processed through sliding windows of 10 to generate training vectors.
+    \item \textbf{Model Parameters:} 50 estimators, contamination factor 0.1, random state 42.
+    \item \textbf{Retraining Schedule:} Models are cached per service and retrained every 60~minutes to adapt to evolving network conditions.
+    \item \textbf{Minimum Data Threshold:} At least 50 historical checks (yielding $\geq$20 training vectors) are required before training begins.
+    \item \textbf{Anomaly Detection:} A prediction of $-1$ with a decision function score below $-0.1$ flags the ML vote.
+\end{itemize}
+
+\section{Voting System and Risk Classification}
+\noindent The three detection methods operate as independent voters. The composite risk level is determined by majority consensus:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{0.7\textwidth}{|c|c|X|}
+\hline
+\textbf{Votes (out of 3)} & \textbf{Risk Level} & \textbf{Confidence} \\
+\hline
+0 & LOW & 0.00 \\
+\hline
+1 & MEDIUM & 0.33 \\
+\hline
+2 & HIGH & 0.67 \\
+\hline
+3 & HIGH & 1.00 \\
+\hline
+\end{tabularx}
+\caption{Risk Classification Based on Voting Consensus}
+\label{tab:voting}
+\end{table}
+
+\noindent This voting mechanism ensures that transient spikes detected by only one method (e.g., a momentary latency peak caught by threshold rules) do not generate false HIGH-risk alerts.
+
+\section{Prediction Pipeline}
+\noindent The complete prediction pipeline is illustrated in Figure~\ref{fig:prediction_pipeline}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  block/.style={draw, rounded corners, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\footnotesize, fill=blue!8},
+  decision/.style={draw, diamond, aspect=2, minimum width=1.5cm, align=center, font=\footnotesize, fill=orange!10},
+  result/.style={draw, rounded corners, minimum width=2cm, minimum height=0.7cm, align=center, font=\footnotesize\bfseries},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  >=Stealth
+]
+% Pipeline
+\node[block] (fetch) at (0,0) {Fetch last 30\\checks from DB};
+\node[block] (extract) at (0,-1.5) {Extract 9-dim\\feature vector};
+\node[block] (thresh) at (-3.5,-3.5) {Threshold\\Rules};
+\node[block] (ewma) at (0,-3.5) {EWMA\\Deviation};
+\node[block] (iforest) at (3.5,-3.5) {Isolation\\Forest};
+\node[block] (vote) at (0,-5.5) {Count Votes\\(0--3)};
+\node[result, fill=green!15] (low) at (-3.5,-7.5) {LOW\\(0 votes)};
+\node[result, fill=yellow!20] (med) at (0,-7.5) {MEDIUM\\(1 vote)};
+\node[result, fill=red!15] (high) at (3.5,-7.5) {HIGH\\($\geq$2 votes)};
+\node[block, fill=red!10] (alert) at (3.5,-9) {Trigger Alert};
+
+% Arrows
+\draw[arr] (fetch) -- (extract);
+\draw[arr] (extract) -- (thresh);
+\draw[arr] (extract) -- (ewma);
+\draw[arr] (extract) -- (iforest);
+\draw[arr] (thresh) -- (vote);
+\draw[arr] (ewma) -- (vote);
+\draw[arr] (iforest) -- (vote);
+\draw[arr] (vote) -- (low);
+\draw[arr] (vote) -- (med);
+\draw[arr] (vote) -- (high);
+\draw[arr] (high) -- (alert);
+\end{tikzpicture}
+\caption{Predictive Anomaly Detection Pipeline}
+\label{fig:prediction_pipeline}
+\end{figure}
+
+\section{Predictive Alert Generation}
+\noindent To prevent alert fatigue, the system employs transition-based alerting. A HIGH-risk alert is dispatched only when a service \textit{transitions} from a non-HIGH state to HIGH. If a service remains continuously at HIGH risk across multiple prediction cycles, subsequent alerts are suppressed. This is implemented by querying the previous prediction record for the same service and comparing risk levels before generating an \texttt{AlertLog} entry of type \texttt{PREDICTED\_DOWN}.
+
+\section{Sample Code}
+\begin{lstlisting}[language=Python, caption={EWMA Computation for Predictive Baseline}, label={lst:ewma}]
+def compute_ewma(values: list, alpha: float = 0.3):
+    """
+    Computes the Exponentially Weighted Moving Average to detect
+    statistical deviations in service response times.
+    """
+    if not values:
+        return 0.0, 0.0
+        
+    ewma = values[0]
+    residuals = []
+    
+    for v in values:
+        residual = abs(v - ewma)
+        residuals.append(residual)
+        ewma = alpha * v + (1 - alpha) * ewma
+        
+    mean_r = sum(residuals) / len(residuals)
+    variance = sum((r - mean_r) ** 2 for r in residuals) / len(residuals)
+    std = variance ** 0.5
+    return ewma, std
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption={Three-Method Voting and Risk Classification}, label={lst:voting}]
+# Run all three detection methods
+t_flag, t_reason = check_threshold_rules(features)
+e_flag, e_reason = check_ewma_deviation(features)
+i_flag, i_reason = check_isolation_forest(features, _model_cache, 
+                                           service.id, db)
+
+# Count votes and determine risk level
+votes = sum([t_flag, e_flag, i_flag])
+if votes >= 2:
+    risk_level = "high"
+elif votes == 1:
+    risk_level = "medium"
+else:
+    risk_level = "low"
+confidence = round(votes / 3.0, 2)
+\end{lstlisting}
+
+%=============================================================
+% CHAPTER 8: AUTOMOTIVE EXTENSION
+%=============================================================
+\chapter{AUTOMOTIVE EXTENSION}
+
+The project presents a proof-of-concept extension of the DragonPing architecture into the domain of Software Defined Vehicles. Using an ESP32 microcontroller as an ECU simulator, the chapter demonstrates that the platform's agent-based model adapts to automotive embedded systems without changes to the backend infrastructure.
+
+\section{Software Defined Vehicles}
+\noindent The automotive industry is undergoing a fundamental transformation, transitioning from traditional hardware-centric engineering to the paradigm of Software Defined Vehicles (SDVs). Historically, vehicle functionality was hardcoded into dozens of isolated Electronic Control Units (ECUs), making updates and system-wide monitoring highly complex. In the SDV architecture, the vehicle operates as a rolling computer network, where centralized computing nodes orchestrate modular software functions. This shift introduces challenges analogous to traditional IT infrastructure: network latency, software bugs, component degradation, and the need for real-time observability. Recognising this parallel, DragonPing incorporates an automotive extension to demonstrate that modern web-based monitoring architectures can be effectively adapted to track vehicle telemetry and ECU health.
+
+\section{Architecture Mapping}
+\noindent To integrate automotive monitoring into the DragonPing platform, a conceptual mapping was established between traditional IT infrastructure and SDV network topologies. 
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{The Edge Node (Agent vs. ECU):} In the IT domain, a shell script acts as the edge agent monitoring server metrics. In the automotive domain, an individual ECU (or a centralized gateway module) acts as the edge agent, collecting sensor data.
+    \item \textbf{The Transport Layer:} While standard agents use Ethernet or Wi-Fi to transmit HTTP payloads, an automotive gateway aggregates data from internal CAN (Controller Area Network) or Automotive Ethernet buses before transmitting it to the cloud via cellular networks (4G/5G).
+    \item \textbf{The Backend (Server vs. Telematics Cloud):} The DragonPing FastAPI backend serves as the telematics cloud, ingesting, validating, and storing the high-frequency telemetry data.
+    \item \textbf{The Presentation Layer:} The React dashboard translates from an IT status matrix into a Vehicle Human-Machine Interface (HMI), visualizing real-time diagnostics.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, minimum width=3cm, minimum height=0.9cm, align=center, font=\footnotesize},
+  arr/.style={<->, thick, {Stealth[length=2mm]}-{Stealth[length=2mm]}},
+  lbl/.style={font=\tiny\bfseries, fill=white, inner sep=2pt},
+  >=Stealth
+]
+% IT Domain (left)
+\node[font=\small\bfseries] at (-3.5,4) {IT Monitoring Domain};
+\node[box, fill=blue!10] (agent) at (-3.5,3) {Shell Agent\\(Linux Host)};
+\node[box, fill=blue!10] (ethernet) at (-3.5,1.5) {Ethernet / WiFi\\HTTP POST};
+\node[box, fill=blue!10] (backend) at (-3.5,0) {FastAPI Backend\\(Central Server)};
+\node[box, fill=blue!10] (itdash) at (-3.5,-1.5) {React Dashboard\\(Status Matrix)};
+
+% SDV Domain (right)
+\node[font=\small\bfseries] at (3.5,4) {SDV Automotive Domain};
+\node[box, fill=orange!10] (ecu) at (3.5,3) {ESP32 ECU\\Simulator};
+\node[box, fill=orange!10] (wifi) at (3.5,1.5) {WiFi / 4G-5G\\HTTP / MQTT};
+\node[box, fill=orange!10] (cloud) at (3.5,0) {Telematics Cloud\\(Same Backend)};
+\node[box, fill=orange!10] (hmi) at (3.5,-1.5) {Vehicle HMI\\Dashboard};
+
+% Mapping arrows
+\draw[arr] (agent) -- node[lbl]{Edge Node} (ecu);
+\draw[arr] (ethernet) -- node[lbl]{Transport} (wifi);
+\draw[arr] (backend) -- node[lbl]{Backend} (cloud);
+\draw[arr] (itdash) -- node[lbl]{Presentation} (hmi);
+
+% Vertical connections
+\draw[->, thick] (agent) -- (ethernet);
+\draw[->, thick] (ethernet) -- (backend);
+\draw[->, thick] (backend) -- (itdash);
+\draw[->, thick] (ecu) -- (wifi);
+\draw[->, thick] (wifi) -- (cloud);
+\draw[->, thick] (cloud) -- (hmi);
+\end{tikzpicture}
+\caption{Architecture Mapping: IT Monitoring vs. SDV Automotive Domain}
+\label{fig:auto_mapping}
+\end{figure}
+
+\section{ESP32 Proof of Concept}
+\noindent To validate the architecture mapping without requiring access to a physical vehicle network, a hardware-in-the-loop prototype was developed using an ESP32 microcontroller. The ESP32 serves as a proxy for an automotive ECU. 
+
+\noindent The microcontroller is programmed using C++ within the Arduino IDE ecosystem. It simulates dynamic vehicle telemetry, including engine RPM, coolant temperature, battery voltage, and discrete Diagnostic Trouble Codes (DTCs). Rather than transmitting over a CAN bus, the ESP32 utilizes its onboard Wi-Fi module to package this simulated data into structured JSON payloads. These payloads are transmitted securely via HTTP POST requests to the DragonPing backend's telemetry ingestion endpoints, mirroring the behavior of the standard Linux shell agent. This proof-of-concept successfully demonstrates the backend's capability to ingest and process embedded IoT data streams interchangeably with standard server metrics.
+
+\section{Vehicle HMI Dashboard}
+\noindent To accommodate the ingested automotive data, a dedicated view was engineered within the React frontend. Unlike the standard IT dashboard, which focuses on uptime percentages and latency graphs, the Vehicle HMI (Human-Machine Interface) dashboard emphasizes real-time state visualization. 
+
+\noindent The HMI dynamically renders the data received from the ESP32 simulator. It features digital gauges for continuous variables such as RPM and battery voltage, alongside status indicators for discrete alerts (e.g., active DTC flags). By reusing the existing real-time polling hooks and component architecture, the HMI proves that the frontend framework is highly extensible and capable of supporting multi-domain monitoring interfaces without requiring a separate application stack.
+
+\section{Production Pathway}
+\noindent While the ESP32 prototype successfully validates the core concept, deploying this architecture in a production SDV environment requires several critical enhancements. 
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Hardware Integration:} The microcontroller must be replaced with an automotive-grade gateway interface (such as a device equipped with an MCP2515 CAN transceiver) capable of reading raw frames directly from the vehicle's OBD-II port or internal CAN bus.
+    \item \textbf{Protocol Adaptation:} High-frequency automotive telemetry is better suited for lightweight publish-subscribe protocols rather than standard HTTP. Migrating the ingestion layer to MQTT over TLS would drastically reduce bandwidth overhead and improve real-time responsiveness.
+    \item \textbf{Edge Computing:} To prevent overwhelming the telematics cloud, the predictive analytics engine (Isolation Forest) should be partially deployed at the edge. The on-board vehicle gateway would run lightweight anomaly detection models locally, transmitting only critical deviations or aggregated summaries to the DragonPing backend, rather than streaming raw, second-by-second sensor data.
+\end{itemize}
+
+%=============================================================
+% CHAPTER 9: TESTING
+%=============================================================
+\chapter{TESTING}
+
+The project validates DragonPing through a structured testing approach covering unit, integration, system, and CI/CD pipeline testing. The chapter presents test cases, expected outcomes, and observed results across all major functional modules.
+
+\section{Testing Methodology}
+\noindent The testing methodology for DragonPing ensures that individual components, their integrations, and the complete system operate reliably under expected conditions. Given the asynchronous nature of the backend and the critical requirement for high availability in monitoring tools, a rigorous testing framework was established. 
+
+\noindent Testing was divided into automated and manual phases. The backend API, database ORM, and core monitoring logic were subjected to automated testing using the \texttt{pytest} framework. To ensure isolated execution without corrupting production data, these tests were run against an ephemeral, in-memory SQLite database. The frontend React application and hardware edge devices were evaluated through manual system testing to verify visual state changes and real-time dashboard responsiveness. Furthermore, the testing lifecycle is integrated into the DevOps workflow, where automated pipelines execute the test suite on every code commit.
+
+\section{Unit Testing}
+\noindent Unit testing isolates individual functions, classes, and API endpoints to verify their correctness independent of external dependencies. In the DragonPing backend, unit tests primarily target the FastAPI routers (Authentication, Services, and Public endpoints) by mocking external network calls and database states.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|l|}
+\hline
+\textbf{Test ID} & \textbf{Description} & \textbf{Expected Output} & \textbf{Result} \\
+\hline
+AUTH-001 & Register with valid credentials & 201 Created & Pass \\
+\hline
+AUTH-002 & Register duplicate email & 400 Bad Request & Pass \\
+\hline
+AUTH-003 & Login with correct password & 200 OK, JWT token returned & Pass \\
+\hline
+AUTH-004 & Login with wrong password & 401 Unauthorized & Pass \\
+\hline
+AUTH-005 & Access protected route without token & 401 Unauthorized & Pass \\
+\hline
+\end{tabularx}
+\caption{Authentication Unit Test Cases}
+\label{tab:test_auth}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|l|}
+\hline
+\textbf{Test ID} & \textbf{Description} & \textbf{Expected Output} & \textbf{Result} \\
+\hline
+SVC-001 & Create HTTP service with valid URL & 201 Created & Pass \\
+\hline
+SVC-002 & Create ICMP device service & 201 Created & Pass \\
+\hline
+SVC-003 & List all services & 200 OK, JSON array returned & Pass \\
+\hline
+SVC-004 & Delete existing service & 204 No Content & Pass \\
+\hline
+SVC-005 & Create service without authentication & 401 Unauthorized & Pass \\
+\hline
+\end{tabularx}
+\caption{Service Management Unit Test Cases}
+\label{tab:test_services}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|l|}
+\hline
+\textbf{Test ID} & \textbf{Description} & \textbf{Expected Output} & \textbf{Result} \\
+\hline
+PUB-001 & Access public status endpoint & 200 OK (No auth required) & Pass \\
+\hline
+PUB-002 & Verify \texttt{is\_public} services are visible & Public service included in payload & Pass \\
+\hline
+PUB-003 & Verify private services are hidden & Private service excluded from payload & Pass \\
+\hline
+\end{tabularx}
+\caption{Public API Unit Test Cases}
+\label{tab:test_public}
+\end{table}
+
+\section{Integration Testing}
+\noindent Integration testing verifies the interaction between disparate modules. For DragonPing, critical integrations include the communication between the \texttt{APScheduler} and the database, the ingestion of agent telemetry, and the triggering mechanism between the monitoring engine and the alerting module. External services, such as SMTP servers, were mocked during automated testing to prevent spamming real email addresses.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|l|}
+\hline
+\textbf{Test ID} & \textbf{Description} & \textbf{Expected Output} & \textbf{Result} \\
+\hline
+INT-001 & Monitoring engine persists check results & New row created in \texttt{checks} table & Pass \\
+\hline
+INT-002 & Alert module triggers on service DOWN & SMTP email dispatch function called & Pass \\
+\hline
+INT-003 & Agent heartbeat payload processing & \texttt{last\_seen} timestamp updated in DB & Pass \\
+\hline
+INT-004 & Prediction engine runs after configured window & New row in \texttt{service\_predictions} table & Pass \\
+\hline
+\end{tabularx}
+\caption{Integration Test Cases}
+\label{tab:integration}
+\end{table}
+
+\section{System Testing}
+\noindent System testing evaluates the complete, integrated application from the user's perspective. These tests ensure that the frontend React dashboard accurately reflects the state of the backend database, and that end-to-end data flows (such as an ESP32 sending a payload and it appearing on the HMI dashboard) function correctly in a production-like Docker environment.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|l|}
+\hline
+\textbf{Test ID} & \textbf{Description} & \textbf{Expected Output} & \textbf{Result} \\
+\hline
+SYS-001 & End-to-end service monitoring cycle & Real-time status badge updates in UI & Pass \\
+\hline
+SYS-002 & Email alert dispatch on 5 consecutive failures & Alert email successfully received in inbox & Pass \\
+\hline
+SYS-003 & Agent telemetry visualization & CPU/RAM graphs update dynamically & Pass \\
+\hline
+SYS-004 & ESP32 telemetry appears in Vehicle HMI & Live simulated gauges update in UI & Pass \\
+\hline
+SYS-005 & RBAC dashboard rendering & Non-admin users cannot see settings & Pass \\
+\hline
+\end{tabularx}
+\caption{System Test Cases}
+\label{tab:system}
+\end{table}
+
+\section{CI/CD Pipeline Testing}
+\noindent To enforce continuous quality assurance, testing is structurally integrated into the deployment lifecycle. DragonPing utilizes GitHub Actions to execute an automated pipeline defined in \texttt{.github/workflows/ci.yml}. 
+
+\noindent Upon every code push or pull request to the main repository branch, the pipeline provisions an isolated Ubuntu runner environment. It first executes \texttt{ruff}, a highly performant Python linter, to scan the codebase for syntax errors, unused imports, and PEP-8 style violations. Following a successful linting phase, the pipeline executes the complete \texttt{pytest} suite. If any unit or integration test fails, the pipeline immediately aborts and marks the commit as failed, effectively blocking broken code from being merged or deployed. This automated testing layer guarantees that the predictive models, API endpoints, and monitoring logic remain stable as new features are iteratively added.
+
+%=============================================================
+% CHAPTER 10: RESULTS AND DISCUSSION
+%=============================================================
+\chapter{RESULTS AND DISCUSSION}
+
+The project evaluates the observable outcomes of deploying and operating DragonPing under simulated conditions. Performance benchmarks, alert system behaviour, predictive detection accuracy, and an honest assessment of current limitations are presented.
+
+\section{System Performance}
+\noindent DragonPing was evaluated over a continuous testing period monitoring five services: two public HTTPS websites, two local network devices via ICMP, and one TCP port on a local database server. The monitoring engine executed checks every 30 seconds, generating approximately 2,880 check records per service per day, totalling over 14,400 check records per 24-hour period across all monitored services.
+
+\noindent The FastAPI backend consistently handled incoming API requests with average response latencies below 40\,ms for read endpoints and below 80\,ms for write operations, as measured during concurrent frontend polling and agent heartbeat ingestion. The APScheduler monitoring cycle introduced negligible CPU overhead (under 3\%) on the development machine (Intel Core i5 8th generation, 4\,GB RAM), confirming the platform's suitability for resource-constrained environments.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|X|l|}
+\hline
+\textbf{Metric} & \textbf{Observed Value} \\
+\hline
+Check records generated per day (5 services) & $\approx$14,400 \\
+\hline
+Average API response time (read endpoints) & $<$ 40\,ms \\
+\hline
+Monitoring engine CPU overhead & $<$ 3\% \\
+\hline
+Agent heartbeat ingestion latency & $<$ 20\,ms \\
+\hline
+Time to detect service DOWN (5 consecutive failures) & 2.5 minutes \\
+\hline
+ML model training time per service (50 estimators) & $\approx$120\,ms \\
+\hline
+\end{tabularx}
+\caption{System Performance Observations}
+\label{tab:performance}
+\end{table}
+
+\section{Alert System Results}
+\noindent The alerting system was validated by deliberately stopping monitored services and measuring the end-to-end notification latency. After five consecutive failed checks (the configured threshold), an email alert was dispatched via the configured SMTP server. The average time from service failure to email receipt was observed to be under 3 minutes, which includes the 2.5-minute detection window plus SMTP transmission delay.
+
+\noindent Telegram alerts, when enabled, were delivered within 5 seconds of the alert being triggered, significantly faster than SMTP delivery due to the Telegram Bot API's low-latency webhook architecture. SSL certificate expiry warnings were validated by checking a service with a certificate within the 30-day warning window, successfully generating a \texttt{CERT\_EXPIRY} alert type in the \texttt{alert\_logs} table.
+
+\section{Predictive Detection Results}
+\noindent The predictive anomaly detection engine was evaluated by injecting controlled latency degradation patterns into a monitored service and observing whether the system raised HIGH-risk predictions prior to an absolute service failure.
+
+\noindent In test scenarios where response times were gradually increased to simulate a degrading service, the EWMA method consistently detected the deviation within 4 to 6 checks of the degradation onset, raising a MEDIUM-risk flag. When the degradation persisted for 10 or more checks, the Isolation Forest model confirmed the anomaly, elevating the risk to HIGH and triggering a predictive alert --- typically 5 to 8 minutes before the service would have crossed the absolute DOWN threshold.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|X|l|}
+\hline
+\textbf{Metric} & \textbf{Observed Value} \\
+\hline
+Minimum checks required before IF model activates & 50 \\
+\hline
+Average early warning lead time before DOWN & 5--8 minutes \\
+\hline
+EWMA detection latency (gradual degradation) & 4--6 checks \\
+\hline
+IF model retraining interval & 60 minutes \\
+\hline
+IF training time per service & $\approx$120\,ms \\
+\hline
+False positive rate (stable services) & $<$ 5\% \\
+\hline
+\end{tabularx}
+\caption{Predictive Detection Evaluation Results}
+\label{tab:prediction_results}
+\end{table}
+
+\noindent The false positive rate was kept below 5\% for stable services through the combination of the minimum noise floor of 5\,ms in the EWMA method and the majority-voting requirement for HIGH-risk classification. Services experiencing only transient latency spikes (captured by a single threshold rule vote) were correctly classified as MEDIUM risk rather than HIGH, avoiding unnecessary alert fatigue.
+
+\section{Limitations}
+\noindent Despite the promising results, several limitations were identified during evaluation:
+\begin{itemize}[label=\textbullet, leftmargin=*]
+    \item \textbf{Cold Start Problem:} The Isolation Forest model requires a minimum of 50 historical checks (approximately 25 minutes at the default 30-second interval) before predictions are activated for a newly added service.
+    \item \textbf{No Seasonality Awareness:} The EWMA baseline treats all time periods equally, making it insensitive to predictable usage patterns such as peak traffic during business hours.
+    \item \textbf{Single-Node Architecture:} The current deployment runs all monitoring, prediction, and alert processing on a single server, which may become a bottleneck at larger scales.
+    \item \textbf{Hardware Dependency for Automotive Extension:} The automotive proof-of-concept relies on an ESP32 microcontroller as a hardware proxy. Integration with a physical CAN bus was not possible within the project scope.
+\end{itemize}
+%=============================================================
+% CHAPTER 11: CONCLUSION AND FUTURE SCOPE
+%=============================================================
+\chapter{CONCLUSION AND FUTURE SCOPE}
+
+The project summarises the achievements of DragonPing and identifies directions for future development toward enterprise-grade deployment.
+
+\noindent The DragonPing project successfully conceptualised, engineered, and deployed a comprehensive, multi-domain smart monitoring and predictive analytics platform. Moving beyond the constrained scope of traditional web-availability dashboards, the system effectively bridged the gap between standard IT infrastructure observability and modern embedded system telemetry. By leveraging an asynchronous FastAPI backend and a responsive React frontend, the platform proved highly capable of orchestrating concurrent health checks across HTTP, HTTPS, ICMP, and TCP protocols. The integration of distributed, shell-based agents allowed for deep, host-level resource tracking, providing administrators with a unified view of both external web services and internal network hardware. A major achievement of this project was the successful implementation of the hybrid predictive analytics engine. By combining statistical baselining (EWMA) with unsupervised machine learning (Isolation Forest via \texttt{scikit-learn}), the system transitioned from a purely reactive alerting paradigm to a proactive one. This intelligence allows the platform to forecast latency degradation and dispatch early-warning email notifications prior to absolute service failure. Furthermore, the architectural extension into the Software Defined Vehicle (SDV) domain---utilising an ESP32 microcontroller as a hardware-in-the-loop ECU simulator---demonstrated the platform's high degree of scalability and cross-industry applicability. Coupled with modern DevOps practices, including Docker containerisation and automated CI/CD pipelines via GitHub Actions, DragonPing stands as a robust, production-aligned system engineering project that successfully meets the requirements of a modern digital infrastructure environment.
+
+\noindent While the current iteration of DragonPing establishes a strong operational foundation, several avenues exist for future enhancement to scale the platform for enterprise-grade deployment. The core \texttt{APScheduler} can be decoupled into a distributed task queue (e.g., utilizing Celery with a Redis broker) to eliminate potential sequential drift and monolithic execution bottlenecks, allowing multiple worker nodes across different geographic regions to perform concurrent monitoring. As the volume of historical check data and agent telemetry grows, migrating the metrics storage from PostgreSQL to a purpose-built time-series database, such as InfluxDB or TimescaleDB, would drastically improve read/write performance and enable complex, long-term historical data aggregation for advanced SLA reporting. Telegram notifications are already implemented; extending the notification module to support Slack and Microsoft Teams webhooks natively would provide faster, more versatile alert delivery to incident response teams. To transition the SDV extension from a prototype to a production-ready module, the ingestion layer should be upgraded to support the lightweight MQTT publish-subscribe protocol, and the hardware edge node should be replaced with an automotive gateway featuring native CAN bus transceivers. Future iterations could also deploy lightweight versions of the anomaly detection models directly onto the edge telemetry agents or vehicle gateways, allowing anomalies to be detected locally before transmitting alerts to the cloud.
+%=============================================================
+% BIBLIOGRAPHY
+%=============================================================
+\newpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\renewcommand{\bibname}{BIBLIOGRAPHY}
+
+\begin{thebibliography}{99}
+
+% --- Section 1: IEEE Conference Papers and Journals (descending by year) ---
+
+\bibitem{sdv_autosar}
+C.~Proff and F.~Finkbeiner,
+``Software-Defined Vehicles and the Transition to Zonal Architectures,''
+\textit{ATZ Worldwide}, vol.~125, no.~3, pp.~14--19, 2023.
+[Retrieved March 2026].~[1]
+
+\bibitem{taylor2018forecasting}
+S.~J.~Taylor and B.~Letham,
+``Forecasting at Scale,''
+\textit{The American Statistician},
+vol.~72, no.~1, pp.~37--45, 2018.
+[Retrieved March 2026].~[2]
+
+\bibitem{jwt_rfc}
+M.~Jones, J.~Bradley, and N.~Sakimura,
+``JSON Web Token (JWT),''
+\textit{IETF RFC 7519}, May 2015.
+[Retrieved March 2026].~[3]
+
+\bibitem{ewma}
+D.~C.~Montgomery,
+\textit{Introduction to Statistical Quality Control}, 7th~ed.
+New York, NY, USA: John Wiley~\& Sons, 2012.
+[Retrieved March 2026].~[4]
+
+\bibitem{sklearn}
+F.~Pedregosa \textit{et~al.},
+``Scikit-learn: Machine Learning in Python,''
+\textit{Journal of Machine Learning Research},
+vol.~12, pp.~2825--2830, 2011.
+[Retrieved March 2026].~[5]
+
+\bibitem{isolation_forest}
+F.~T.~Liu, K.~M.~Ting, and Z.~H.~Zhou,
+``Isolation Forest,''
+\textit{2008 Eighth IEEE International Conference on Data Mining (ICDM)},
+Pisa, Italy, pp.~413--422, Dec. 2008.
+[Retrieved March 2026].~[6]
+
+\bibitem{bcrypt}
+N.~Provos and D.~Mazi\`eres,
+``A Future-Adaptable Password Scheme,''
+\textit{Proceedings of the USENIX Annual Technical Conference},
+Monterey, CA, USA, pp.~81--91, 1999.
+[Retrieved March 2026].~[7]
+
+\bibitem{can_bus}
+R.~Bosch GmbH,
+``CAN Specification Version 2.0,''
+\textit{Bosch Technical Report}, 1991.
+[Retrieved March 2026].~[8]
+
+% --- Section 2: Technical Standards and Specifications (descending by year) ---
+
+\bibitem{autosar}
+AUTOSAR Consortium,
+``AUTOSAR Adaptive Platform -- Technical Overview,''
+\textit{AUTOSAR Specification}, Release 22-11, 2022.
+[Retrieved March 2026].~[9]
+
+\bibitem{obd2}
+SAE International,
+``OBD-II SAE J1979 Standard -- Diagnostic Test Modes,''
+\textit{SAE Standard J1979}, 2020.
+[Retrieved March 2026].~[10]
+
+% --- Section 3: Online Documentation and Repositories (descending by year) ---
+
+\bibitem{fastapi}
+S.~Ram{\'i}rez,
+``FastAPI -- Modern, fast web framework for building APIs,''
+\textit{FastAPI Documentation}, 2024.
+[Online]. Available: \url{https://fastapi.tiangolo.com}.
+[Retrieved March 2026].~[11]
+
+\bibitem{react}
+Meta Platforms,
+``React -- A JavaScript library for building user interfaces,''
+\textit{React Documentation}, 2024.
+[Online]. Available: \url{https://reactjs.org}.
+[Retrieved March 2026].~[12]
+
+\bibitem{docker}
+Docker Inc.,
+``Docker Documentation,''
+2024.
+[Online]. Available: \url{https://docs.docker.com}.
+[Retrieved March 2026].~[13]
+
+\bibitem{github_actions}
+GitHub Inc.,
+``GitHub Actions Documentation,''
+2024.
+[Online]. Available: \url{https://docs.github.com/actions}.
+[Retrieved March 2026].~[14]
+
+\bibitem{nagios}
+Nagios Enterprises,
+``Nagios Core Documentation,''
+\textit{Nagios Documentation}, 2024.
+[Online]. Available: \url{https://www.nagios.org/documentation/}.
+[Retrieved March 2026].~[15]
+
+\bibitem{prometheus}
+Prometheus Authors,
+``Prometheus -- Monitoring System and Time Series Database,''
+\textit{Prometheus Documentation}, 2024.
+[Online]. Available: \url{https://prometheus.io/docs/}.
+[Retrieved March 2026].~[16]
+
+\bibitem{apscheduler}
+A.~Lepp\"anen,
+``APScheduler -- Advanced Python Scheduler,''
+\textit{APScheduler Documentation}, 2024.
+[Online]. Available: \url{https://apscheduler.readthedocs.io}.
+[Retrieved March 2026].~[17]
+
+\bibitem{esp32}
+Espressif Systems,
+``ESP32 Technical Reference Manual,''
+\textit{Espressif Documentation}, 2024.
+[Online]. Available: \url{https://docs.espressif.com/projects/esp-idf}.
+[Retrieved March 2026].~[18]
+
+\bibitem{uptime_kuma}
+Louis Lam,
+``Uptime Kuma -- A fancy self-hosted monitoring tool,''
+\textit{GitHub Repository}, 2021.
+[Online]. Available: \url{https://github.com/louislam/uptime-kuma}.
+[Retrieved March 2026].~[19]
+
+\end{thebibliography}
+
+%=============================================================
+% APPENDIX
+%=============================================================
+\appendix
+
+\chapter{API ENDPOINT REFERENCE}
+\label{app:api}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+POST & /auth/register & Register a new administrator account \\
+\hline
+POST & /auth/login & Authenticate and receive a JWT session token \\
+\hline
+\end{tabularx}
+\caption{Authentication Endpoints}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /api/services & Retrieve a list of all configured services \\
+\hline
+POST & /api/services & Create a new monitoring target (HTTP/ICMP/TCP) \\
+\hline
+GET & /api/services/\{id\} & Retrieve detailed configuration for a specific service \\
+\hline
+PUT & /api/services/\{id\} & Update parameters for an existing service \\
+\hline
+DELETE & /api/services/\{id\} & Remove a service and its associated monitoring data \\
+\hline
+\end{tabularx}
+\caption{Service Management Endpoints}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /api/status/service/\{id\} & Get current operational status and SLA metrics \\
+\hline
+GET & /api/status/service/\{id\}/checks & Retrieve an array of the most recent health checks \\
+\hline
+GET & /api/status/all & Retrieve an aggregated summary of all system statuses \\
+\hline
+GET & /api/public/status & Unauthenticated endpoint for public status dashboard \\
+\hline
+GET & /api/predictions/\{id\} & Fetch the latest Isolation Forest risk score and reasoning \\
+\hline
+\end{tabularx}
+\caption{Monitoring and Status Endpoints}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+POST & /api/agent/register & Provision a new agent and generate a long-lived JWT \\
+\hline
+POST & /api/agent/heartbeat & Ingest secure payload of CPU/RAM/Disk/Network metrics \\
+\hline
+GET & /api/agent/\{hostname\}/metrics & Retrieve historical telemetry data for frontend visualisation \\
+\hline
+GET & /api/agent/list & List all registered hardware and ECU proxy agents \\
+\hline
+\end{tabularx}
+\caption{Telemetry Agent Endpoints}
+\end{table}
+
+\chapter{INSTALLATION AND DEPLOYMENT GUIDE}
+\label{app:install}
+
+\section*{Docker Containerisation (Production Mode)}
+\noindent The recommended method for deploying DragonPing is via Docker Compose, which automatically provisions the FastAPI backend, React frontend, and PostgreSQL database.
+
+\begin{lstlisting}[language=bash, caption={Docker Deployment commands}, label={lst:docker_deploy}]
+# Clone the repository
+git clone https://github.com/anandu-pn/dragonping.git
+cd dragonping
+
+# Configure environment variables
+cp .env.example .env
+nano .env  # Add secure JWT_SECRET and SMTP credentials
+
+# Build and start the containerised stack in detached mode
+docker-compose up -d --build
+
+# Verify container health
+docker-compose ps
+docker-compose logs -f backend
+\end{lstlisting}
+
+\section*{Native Installation (Development Mode)}
+\noindent For active development or evaluation without Docker, the components can be executed natively.
+
+\begin{lstlisting}[language=bash, caption={Backend Setup}, label={lst:backend_setup}]
+cd dragonping/backend
+
+# Initialize virtual environment
+python -m venv venv
+source venv/bin/activate    # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run database migrations and start the server
+alembic upgrade head
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption={Frontend Setup}, label={lst:frontend_setup}]
+cd dragonping/frontend
+
+# Install Node modules
+npm install
+
+# Start the Vite development server
+npm run dev
+\end{lstlisting}
+
+\section*{Agent Deployment}
+\noindent To monitor a remote Linux host, deploy the shell agent using the following commands:
+
+\begin{lstlisting}[language=bash, caption={Agent Installation}, label={lst:agent_setup}]
+# Download the agent script
+wget https://<YOUR_DRAGONPING_URL>/agent/dragonping-agent.sh
+chmod +x dragonping-agent.sh
+
+# Execute the interactive setup (requires Agent JWT from Dashboard)
+sudo ./dragonping-agent.sh --install
+
+# Verify the cron job is active
+crontab -l | grep dragonping
+\end{lstlisting}
+
+\end{document}
