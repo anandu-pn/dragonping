@@ -1,0 +1,47 @@
+# Force LF line endings for all shell scripts and config files
+# This prevents Windows git from converting LF→CRLF and breaking bash scripts on Linux
+
+# Shell scripts — always LF
+*.sh        text eol=lf
+
+# Docker files — always LF
+Dockerfile  text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Nginx config — always LF
+*.conf      text eol=lf
+
+# Python — always LF
+*.py        text eol=lf
+
+# Frontend — always LF
+*.jsx       text eol=lf
+*.js        text eol=lf
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.css       text eol=lf
+*.html      text eol=lf
+
+# Text files — always LF
+*.md        text eol=lf
+*.txt       text eol=lf
+*.env*      text eol=lf
+
+# JSON — always LF
+*.json      text eol=lf
+
+# Windows-specific files — keep CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Binary files — no line ending conversion
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.gz        binary
+*.tar       binary
