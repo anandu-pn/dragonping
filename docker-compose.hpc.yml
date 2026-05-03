@@ -2,7 +2,7 @@
 # DragonPing — HPC Deployment
 # Single external port: 7190
 # Usage:
-#   docker compose -f docker-compose.hpc.yml --env-file .env.hpc up -d --build
+#   docker-compose -f docker-compose.hpc.yml --env-file .env.hpc up -d --build
 # =============================================================================
 
 services:
@@ -14,17 +14,16 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB:       ${POSTGRES_DB:-dragonping_db}
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB:       dragonping_db
     volumes:
       - dragonping_hpc_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
-    # No ports: block — stays on internal Docker network only
 
   # ---------------------------------------------------------------------------
   # FastAPI backend — internal only, accessed via nginx proxy
@@ -43,12 +42,11 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    # No ports: block — nginx talks to backend:8000 on internal network
 
   # ---------------------------------------------------------------------------
   # Nginx — single entry point on port 7190
-  # Builds and serves the React frontend, proxies /api/* to backend
-  # Build context is project root so it can access both nginx/ and frontend/
+  # Builds React frontend, proxies /api/* to backend
+  # Build context is project root so it can access nginx/ and frontend/
   # ---------------------------------------------------------------------------
   nginx:
     build:
