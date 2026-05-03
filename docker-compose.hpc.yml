@@ -1,3 +1,5 @@
+version: "2.4"
+
 # =============================================================================
 # DragonPing — HPC Deployment
 # Single external port: 7190
