@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install dependencies first (layer cache friendly)
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy frontend source
 COPY frontend/ .
