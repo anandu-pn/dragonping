@@ -103,10 +103,14 @@ if [[ "$RECONFIGURE" == "true" ]]; then
 
     read -rsp "  Gmail App Password (hidden):  " SMTP_PASS
     echo ""
+    # Strip spaces — Gmail App Passwords look like "xxxx xxxx xxxx xxxx"
+    # but spaces are cosmetic only; bash treats them as command separators.
+    SMTP_PASS="${SMTP_PASS// /}"
     while [[ -z "$SMTP_PASS" ]]; do
         warn "App password cannot be empty."
         read -rsp "  Gmail App Password (hidden):  " SMTP_PASS
         echo ""
+        SMTP_PASS="${SMTP_PASS// /}"
     done
 
     read -rp "  Alert recipient email [default: same as above]: " ADMIN_EMAIL
@@ -141,36 +145,36 @@ if [[ "$RECONFIGURE" == "true" ]]; then
 # =============================================================
 
 # Database
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=${DB_PASS}
-POSTGRES_DB=dragonping_db
-DATABASE_URL=postgresql://postgres:${DB_PASS}@db:5432/dragonping_db
+POSTGRES_USER="postgres"
+POSTGRES_PASSWORD="${DB_PASS}"
+POSTGRES_DB="dragonping_db"
+DATABASE_URL="postgresql://postgres:${DB_PASS}@db:5432/dragonping_db"
 
 # Application
-ENVIRONMENT=production
-DEBUG=False
-ENABLE_SLA=true
+ENVIRONMENT="production"
+DEBUG="False"
+ENABLE_SLA="true"
 
 # Security
-JWT_SECRET_KEY=${JWT_SECRET}
-JWT_ALGORITHM=HS256
-JWT_EXPIRY_HOURS=24
+JWT_SECRET_KEY="${JWT_SECRET}"
+JWT_ALGORITHM="HS256"
+JWT_EXPIRY_HOURS="24"
 
 # SMTP / Email Alerts
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=${SMTP_USER}
-SMTP_PASS=${SMTP_PASS}
-SMTP_FROM_EMAIL=${SMTP_USER}
-ADMIN_EMAIL=${ADMIN_EMAIL}
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USER="${SMTP_USER}"
+SMTP_PASS="${SMTP_PASS}"
+SMTP_FROM_EMAIL="${SMTP_USER}"
+ADMIN_EMAIL="${ADMIN_EMAIL}"
 
 # Public Status Page
-PUBLIC_DASHBOARD_URL=http://${HPC_IP}:${HPC_PORT}/public
+PUBLIC_DASHBOARD_URL="http://${HPC_IP}:${HPC_PORT}/public"
 
 # Admin user (used by setup step below)
-_SETUP_ADMIN_USERNAME=${ADMIN_USERNAME}
-_SETUP_ADMIN_EMAIL=${ADMIN_USER_EMAIL}
-_SETUP_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+_SETUP_ADMIN_USERNAME="${ADMIN_USERNAME}"
+_SETUP_ADMIN_EMAIL="${ADMIN_USER_EMAIL}"
+_SETUP_ADMIN_PASSWORD="${ADMIN_PASSWORD}"
 EOF
 
     chmod 600 .env.hpc
@@ -179,7 +183,8 @@ fi
 
 # ── Load env for later use ────────────────────────────────────────────────────
 # shellcheck disable=SC1091
-source .env.hpc
+# set -a exports all vars; set +a restores normal behaviour
+set -a; source .env.hpc; set +a
 
 # ── Build & start ─────────────────────────────────────────────────────────────
 echo ""
@@ -277,7 +282,7 @@ echo -e "${BOLD}─── Container Status ────────────�
 $COMPOSE -f docker-compose.hpc.yml ps
 
 # Re-source to get the public URL
-source .env.hpc 2>/dev/null || true
+set -a; source .env.hpc 2>/dev/null; set +a || true
 
 echo ""
 echo -e "${BOLD}${GREEN}════════════════════════════════════════════════════════════${RESET}"
