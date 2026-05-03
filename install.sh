@@ -241,10 +241,7 @@ $COMPOSE -f docker-compose.hpc.yml exec -T backend python3 - << PYEOF
 import sys, os
 sys.path.insert(0, "/app")
 
-# Load env inside container
-from dotenv import load_dotenv
-load_dotenv()
-
+# Env vars are already injected by docker-compose env_file — no load_dotenv needed
 from app.db import init_db, SessionLocal
 from app.models import User
 from app.auth import hash_password

@@ -1,4 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import axios from 'axios'
+
+// Shared API base — reads VITE_API_URL baked in at build time, falls back to /api
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  headers: { 'Content-Type': 'application/json' },
+})
 
 const AuthContext = createContext(null)
 
@@ -22,52 +29,34 @@ export function AuthProvider({ children }) {
   const register = async (email, password) => {
     try {
       setError(null)
-      const response = await fetch('http://localhost:8000/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.detail || 'Registration failed')
-      }
-
-      const data = await response.json()
+      const response = await apiClient.post('/auth/register', { email, password })
+      const data = response.data
       setToken(data.access_token)
       setUser({ email })
       localStorage.setItem('auth_token', data.access_token)
       localStorage.setItem('user_email', email)
       return { success: true }
     } catch (err) {
-      setError(err.message)
-      return { success: false, error: err.message }
+      const message = err.response?.data?.detail || err.message || 'Registration failed'
+      setError(message)
+      return { success: false, error: message }
     }
   }
 
   const login = async (email, password) => {
     try {
       setError(null)
-      const response = await fetch('http://localhost:8000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.detail || 'Login failed')
-      }
-
-      const data = await response.json()
+      const response = await apiClient.post('/auth/login', { email, password })
+      const data = response.data
       setToken(data.access_token)
       setUser({ email })
       localStorage.setItem('auth_token', data.access_token)
       localStorage.setItem('user_email', email)
       return { success: true }
     } catch (err) {
-      setError(err.message)
-      return { success: false, error: err.message }
+      const message = err.response?.data?.detail || err.message || 'Login failed'
+      setError(message)
+      return { success: false, error: message }
     }
   }
 
